@@ -1,0 +1,85 @@
+../Core/Src/TMC2209.cpp:8:1:TMC2209::TMC2209()	1
+../Core/Src/TMC2209.cpp:15:6:void TMC2209::setup(UART_HandleTypeDef*, long int, TMC2209::SerialAddress)	1
+../Core/Src/TMC2209.cpp:22:6:void TMC2209::setHardwareEnablePin(uint8_t)	1
+../Core/Src/TMC2209.cpp:29:6:void TMC2209::enable()	2
+../Core/Src/TMC2209.cpp:40:6:void TMC2209::disable()	2
+../Core/Src/TMC2209.cpp:51:10:uint16_t TMC2209::constrain(uint16_t, uint16_t, uint16_t)	3
+../Core/Src/TMC2209.cpp:61:6:void TMC2209::setMicrostepsPerStep(uint16_t)	2
+../Core/Src/TMC2209.cpp:73:6:void TMC2209::setMicrostepsPerStepPowerOfTwo(uint8_t)	9
+../Core/Src/TMC2209.cpp:116:6:void TMC2209::setRunCurrent(uint8_t)	1
+../Core/Src/TMC2209.cpp:122:6:void TMC2209::setHoldCurrent(uint8_t)	1
+../Core/Src/TMC2209.cpp:129:6:void TMC2209::setHoldDelay(uint8_t)	1
+../Core/Src/TMC2209.cpp:136:6:void TMC2209::setAllCurrentValues(uint8_t, uint8_t, uint8_t)	1
+../Core/Src/TMC2209.cpp:148:6:void TMC2209::enableInverseMotorDirection()	1
+../Core/Src/TMC2209.cpp:153:6:void TMC2209::disableInverseMotorDirection()	1
+../Core/Src/TMC2209.cpp:158:6:void TMC2209::setStandstillMode(TMC2209::StandstillMode)	1
+../Core/Src/TMC2209.cpp:163:6:void TMC2209::enableAutomaticCurrentScaling()	1
+../Core/Src/TMC2209.cpp:168:6:void TMC2209::disableAutomaticCurrentScaling()	1
+../Core/Src/TMC2209.cpp:173:6:void TMC2209::enableAutomaticGradientAdaptation()	1
+../Core/Src/TMC2209.cpp:178:6:void TMC2209::disableAutomaticGradientAdaptation()	1
+../Core/Src/TMC2209.cpp:183:6:void TMC2209::setPwmOffset(uint8_t)	1
+../Core/Src/TMC2209.cpp:188:6:void TMC2209::setPwmGradient(uint8_t)	1
+../Core/Src/TMC2209.cpp:193:6:void TMC2209::setPowerDownDelay(uint8_t)	1
+../Core/Src/TMC2209.cpp:197:6:void TMC2209::setReplyDelay(uint8_t)	2
+../Core/Src/TMC2209.cpp:207:6:void TMC2209::moveAtVelocity(int32_t)	1
+../Core/Src/TMC2209.cpp:211:6:void TMC2209::moveUsingStepDirInterface()	1
+../Core/Src/TMC2209.cpp:215:6:void TMC2209::enableStealthChop()	1
+../Core/Src/TMC2209.cpp:220:6:void TMC2209::disableStealthChop()	1
+../Core/Src/TMC2209.cpp:225:6:void TMC2209::setCoolStepDurationThreshold(uint32_t)	1
+../Core/Src/TMC2209.cpp:229:6:void TMC2209::setStealthChopDurationThreshold(uint32_t)	1
+../Core/Src/TMC2209.cpp:233:6:void TMC2209::setStallGuardThreshold(uint8_t)	1
+../Core/Src/TMC2209.cpp:237:6:void TMC2209::enableCoolStep(uint8_t, uint8_t)	1
+../Core/Src/TMC2209.cpp:246:6:void TMC2209::disableCoolStep()	1
+../Core/Src/TMC2209.cpp:252:6:void TMC2209::setCoolStepCurrentIncrement(TMC2209::CurrentIncrement)	1
+../Core/Src/TMC2209.cpp:257:6:void TMC2209::setCoolStepMeasurementCount(TMC2209::MeasurementCount)	1
+../Core/Src/TMC2209.cpp:262:6:void TMC2209::enableAnalogCurrentScaling()	1
+../Core/Src/TMC2209.cpp:267:6:void TMC2209::disableAnalogCurrentScaling()	1
+../Core/Src/TMC2209.cpp:272:6:void TMC2209::useExternalSenseResistors()	1
+../Core/Src/TMC2209.cpp:277:6:void TMC2209::useInternalSenseResistors()	1
+../Core/Src/TMC2209.cpp:284:9:uint8_t TMC2209::getVersion()	1
+../Core/Src/TMC2209.cpp:291:6:bool TMC2209::isCommunicating()	1
+../Core/Src/TMC2209.cpp:295:6:bool TMC2209::isSetupAndCommunicating()	1
+../Core/Src/TMC2209.cpp:299:6:bool TMC2209::isCommunicatingButNotSetup()	3
+../Core/Src/TMC2209.cpp:303:6:bool TMC2209::hardwareDisabled()	1
+../Core/Src/TMC2209.cpp:311:10:uint16_t TMC2209::getIOPins()	1
+../Core/Src/TMC2209.cpp:315:10:uint16_t TMC2209::getMicrostepsPerStep()	9
+../Core/Src/TMC2209.cpp:359:19:TMC2209::Settings TMC2209::getSettings()	2
+../Core/Src/TMC2209.cpp:413:17:TMC2209::Status TMC2209::getStatus()	1
+../Core/Src/TMC2209.cpp:421:10:uint32_t TMC2209::readDrvStatusBytes()	1
+../Core/Src/TMC2209.cpp:426:9:uint8_t TMC2209::getGlobalStatus()	1
+../Core/Src/TMC2209.cpp:430:9:uint8_t TMC2209::getInterfaceTransmissionCounter()	1
+../Core/Src/TMC2209.cpp:434:10:uint32_t TMC2209::getInterstepDuration()	1
+../Core/Src/TMC2209.cpp:438:10:uint16_t TMC2209::getStallGuardResult()	1
+../Core/Src/TMC2209.cpp:442:9:uint8_t TMC2209::getPwmScaleSum()	1
+../Core/Src/TMC2209.cpp:449:9:int16_t TMC2209::getPwmScaleAuto()	1
+../Core/Src/TMC2209.cpp:456:9:uint8_t TMC2209::getPwmOffsetAuto()	1
+../Core/Src/TMC2209.cpp:463:9:uint8_t TMC2209::getPwmGradientAuto()	1
+../Core/Src/TMC2209.cpp:470:10:uint16_t TMC2209::getMicrostepCounter()	1
+../Core/Src/TMC2209.cpp:476:6:void TMC2209::initialize(long int, TMC2209::SerialAddress)	1
+../Core/Src/TMC2209.cpp:490:5:int TMC2209::serialAvailable()	3
+../Core/Src/TMC2209.cpp:499:8:size_t TMC2209::serialWrite(uint8_t)	3
+../Core/Src/TMC2209.cpp:523:5:int TMC2209::serialRead()	3
+../Core/Src/TMC2209.cpp:545:6:void TMC2209::serialFlush()	2
+../Core/Src/TMC2209.cpp:561:6:void TMC2209::setOperationModeToSerial(TMC2209::SerialAddress)	1
+../Core/Src/TMC2209.cpp:573:6:void TMC2209::setRegistersToDefaults()	1
+../Core/Src/TMC2209.cpp:601:6:void TMC2209::readAndStoreRegisters()	1
+../Core/Src/TMC2209.cpp:607:6:bool TMC2209::serialOperationMode()	1
+../Core/Src/TMC2209.cpp:614:6:void TMC2209::minimizeMotorCurrent()	1
+../Core/Src/TMC2209.cpp:620:10:uint32_t TMC2209::reverseData(uint32_t)	2
+../Core/Src/TMC2209.cpp:708:6:void TMC2209::write(uint8_t, uint32_t)	1
+../Core/Src/TMC2209.cpp:721:10:uint32_t TMC2209::read(uint8_t)	2
+../Core/Src/TMC2209.cpp:745:9:uint8_t TMC2209::percentToCurrentSetting(uint8_t)	1
+../Core/Src/TMC2209.cpp:752:9:uint8_t TMC2209::currentSettingToPercent(uint8_t)	1
+../Core/Src/TMC2209.cpp:758:9:uint8_t TMC2209::map(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)	1
+../Core/Src/TMC2209.cpp:762:9:uint8_t TMC2209::percentToHoldDelaySetting(uint8_t)	1
+../Core/Src/TMC2209.cpp:768:9:uint8_t TMC2209::holdDelaySettingToPercent(uint8_t)	1
+../Core/Src/TMC2209.cpp:773:6:void TMC2209::writeStoredGlobalConfig()	1
+../Core/Src/TMC2209.cpp:777:10:uint32_t TMC2209::readGlobalConfigBytes()	1
+../Core/Src/TMC2209.cpp:781:6:void TMC2209::writeStoredDriverCurrent()	3
+../Core/Src/TMC2209.cpp:794:6:void TMC2209::writeStoredChopperConfig()	1
+../Core/Src/TMC2209.cpp:798:10:uint32_t TMC2209::readChopperConfigBytes()	1
+../Core/Src/TMC2209.cpp:802:6:void TMC2209::writeStoredPwmConfig()	1
+../Core/Src/TMC2209.cpp:806:10:uint32_t TMC2209::readPwmConfigBytes()	1
+../Core/Src/TMC2209.cpp:633:9:uint8_t TMC2209::calculateCrc(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	4
+../Core/Src/TMC2209.cpp:652:6:void TMC2209::sendDatagramUnidirectional(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	1
+../Core/Src/TMC2209.cpp:633:9:uint8_t TMC2209::calculateCrc(Datagram&, uint8_t) [with Datagram = TMC2209::ReadRequestDatagram]	4
