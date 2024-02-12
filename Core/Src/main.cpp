@@ -114,8 +114,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0, step2 = 0;
 bool allowMove = true, gripperMoveFinished = true;
 
-//RoboArm arm(120, 124);
-RoboArm arm(0, 124);
+RoboArm arm(120, 124);
+//RoboArm arm(0, 124);
 
 /* USER CODE END 0 */
 
@@ -586,16 +586,10 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : EndCap1_Pin EndCap2_Pin EndCap3_Pin */
-  GPIO_InitStruct.Pin = EndCap1_Pin|EndCap2_Pin;
+  GPIO_InitStruct.Pin = EndCap1_Pin|EndCap2_Pin|EndCap3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : EndCap3_Pin */
-  GPIO_InitStruct.Pin = EndCap3_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(EndCap3_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : EndCap4_Pin */
   GPIO_InitStruct.Pin = EndCap4_Pin;
@@ -669,7 +663,11 @@ void StartDefaultTask(void const * argument)
 //			float angle = arm.UnshiftZeroAng(un.params.ang);
 //			uint16_t distance = arm.UnshiftZeroLin(un.params.lin);
 //			arm.Move2Motors(angle, distance);
-			if (un_now.params.hold != 0) {
+//			float ang_delta = abs(un_now.params.ang - un_to.params.ang);
+//			float lin_delta = abs(un_now.params.lin - un_to.params.lin);
+			if (un_now.params.hold != 0){ //&&
+//					abs(un_now.params.ang - un_to.params.ang) < 0.001 &&
+//					abs(un_now.params.lin - un_to.params.lin) < 0.001) {
 				allowMove = false;
 				un_now.params.hold = 0;
 				arm.SetGripper(0);
@@ -814,8 +812,12 @@ void StartUARTData(void const * argument)
 //
 //			un_send.params.lin = mils;
 //			un_send.params.hold = 0;
-			un_send.params.lin = arm.GetLin();
-			un_send.params.ang = arm.GetAng();
+			float lin = arm.GetLin();
+			un_send.params.lin = arm.ShiftZeroLin(lin);
+
+			float ang = arm.GetAng();
+			un_send.params.ang = arm.ShiftZeroAng(ang);
+
 			un_send.params.hold = un_now.params.hold;
 
 //			uint8_t send_arr[] = {0x01,0x02,0x03,0x04,
@@ -845,8 +847,8 @@ void StartUARTData(void const * argument)
 
 		if (setZeroFlag) {
 			setZeroFlag = false;
-			arm.SetZeroEncoders();
-//			arm.SetSoftwareZero();
+//			arm.SetZeroEncoders();
+			arm.SetSoftwareZero();
 			un_send.params.lin = 0;
 			un_send.params.ang = 0;
 			un_send.params.hold = 10;
@@ -908,7 +910,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			if (un_now.params.hold == 1) {
 				allowMove = false;
 				gripperMoveFinished = true;
-			} else if (un_now.params.hold == 0) {
+			} else {// if (un_now.params.hold == 0) {
 				allowMove = true;
 				gripperMoveFinished = true;
 			}

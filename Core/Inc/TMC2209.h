@@ -28,26 +28,26 @@ public:
 	// unidirectional methods
 
 	// driver must be enabled before use it is disabled by default
-	void setHardwareEnablePin(uint8_t hardware_enable_pin);
+//	void setHardwareEnablePin(uint8_t hardware_enable_pin);
 	void enable();
 	void disable();
 
 	// valid values = 1,2,4,8,...128,256, other values get rounded down
-	void setMicrostepsPerStep(uint16_t microsteps_per_step);
+//	void setMicrostepsPerStep(uint16_t microsteps_per_step);
 
 	// valid values = 0-8, microsteps = 2^exponent, 0=1,1=2,2=4,...8=256
 	// https://en.wikipedia.org/wiki/Power_of_two
 	void setMicrostepsPerStepPowerOfTwo(uint8_t exponent);
 
 	// range 0-100
-	void setRunCurrent(uint8_t percent);
+//	void setRunCurrent(uint8_t percent);
 	// range 0-100
-	void setHoldCurrent(uint8_t percent);
+//	void setHoldCurrent(uint8_t percent);
 	// range 0-100
-	void setHoldDelay(uint8_t percent);
+//	void setHoldDelay(uint8_t percent);
 	// range 0-100
-	void setAllCurrentValues(uint8_t run_current_percent,
-			uint8_t hold_current_percent, uint8_t hold_delay_percent);
+//	void setAllCurrentValues(uint8_t run_current_percent,
+//			uint8_t hold_current_percent, uint8_t hold_delay_percent);
 
 	void enableInverseMotorDirection();
 	void disableInverseMotorDirection();
@@ -55,109 +55,109 @@ public:
 	enum StandstillMode {
 		NORMAL = 0, FREEWHEELING = 1, STRONG_BRAKING = 2, BRAKING = 3,
 	};
-	void setStandstillMode(StandstillMode mode);
+//	void setStandstillMode(StandstillMode mode);
 
-	void enableAutomaticCurrentScaling();
-	void disableAutomaticCurrentScaling();
-	void enableAutomaticGradientAdaptation();
-	void disableAutomaticGradientAdaptation();
-	// range 0-255
-	void setPwmOffset(uint8_t pwm_amplitude);
-	// range 0-255
-	void setPwmGradient(uint8_t pwm_amplitude);
-
-	// default = 20
-	// mimimum of 2 for StealthChop auto tuning
-	void setPowerDownDelay(uint8_t power_down_delay);
-
-	// mimimum of 2 when using multiple serial addresses
-	// in bidirectional communication
-	const static uint8_t REPLY_DELAY_MAX = 15;
-	void setReplyDelay(uint8_t delay);
-
-	void moveAtVelocity(int32_t microsteps_per_period);
-	void moveUsingStepDirInterface();
-
-	void enableStealthChop();
-	void disableStealthChop();
-
-	void setStealthChopDurationThreshold(uint32_t duration_threshold);
-
-	void setStallGuardThreshold(uint8_t stall_guard_threshold);
-
-	// lower_threshold: min = 1, max = 15
-	// upper_threshold: min = 0, max = 15, 0-2 recommended
-	void enableCoolStep(uint8_t lower_threshold = 1,
-			uint8_t upper_threshold = 0);
-	void disableCoolStep();
-	enum CurrentIncrement {
-		CURRENT_INCREMENT_1 = 0,
-		CURRENT_INCREMENT_2 = 1,
-		CURRENT_INCREMENT_4 = 2,
-		CURRENT_INCREMENT_8 = 3,
-	};
-	void setCoolStepCurrentIncrement(CurrentIncrement current_increment);
-	enum MeasurementCount {
-		MEASUREMENT_COUNT_32 = 0,
-		MEASUREMENT_COUNT_8 = 1,
-		MEASUREMENT_COUNT_2 = 2,
-		MEASUREMENT_COUNT_1 = 3,
-	};
-	void setCoolStepMeasurementCount(MeasurementCount measurement_count);
-	void setCoolStepDurationThreshold(uint32_t duration_threshold);
-
-	void enableAnalogCurrentScaling();
-	void disableAnalogCurrentScaling();
-
-	void useExternalSenseResistors();
-	void useInternalSenseResistors();
-	uint16_t constrain(uint16_t,uint16_t,uint16_t);
-	uint8_t map(uint8_t,uint8_t, uint8_t, uint8_t,uint8_t);
-	// bidirectional methods
-	uint8_t getVersion();
-
-	// if driver is not communicating, check power and communication connections
-	bool isCommunicating();
-
-	// check to make sure TMC2209 is properly setup and communicating
-	bool isSetupAndCommunicating();
-
-	// driver may be communicating but not setup if driver power is lost then
-	// restored after setup so that defaults are loaded instead of setup options
-	bool isCommunicatingButNotSetup();
-
-	// driver may also be disabled by the hardware enable input pin
-	// this pin must be grounded or disconnected before driver may be enabled
-	bool hardwareDisabled();
-
-	uint16_t getIOPins();
-
-	uint16_t getMicrostepsPerStep();
-
-	struct Settings {
-		bool is_communicating;
-		bool is_setup;
-		bool software_enabled;
-		uint16_t microsteps_per_step;
-		bool inverse_motor_direction_enabled;
-		bool stealth_chop_enabled;
-		uint8_t standstill_mode;
-		uint8_t irun_percent;
-		uint8_t irun_register_value;
-		uint8_t ihold_percent;
-		uint8_t ihold_register_value;
-		uint8_t iholddelay_percent;
-		uint8_t iholddelay_register_value;
-		bool automatic_current_scaling_enabled;
-		bool automatic_gradient_adaptation_enabled;
-		uint8_t pwm_offset;
-		uint8_t pwm_gradient;
-		bool cool_step_enabled;
-		bool analog_current_scaling_enabled;
-		bool internal_sense_resistors_enabled;
-	};
-	Settings getSettings();
-
+//	void enableAutomaticCurrentScaling();
+//	void disableAutomaticCurrentScaling();
+//	void enableAutomaticGradientAdaptation();
+//	void disableAutomaticGradientAdaptation();
+//	// range 0-255
+//	void setPwmOffset(uint8_t pwm_amplitude);
+//	// range 0-255
+//	void setPwmGradient(uint8_t pwm_amplitude);
+//
+//	// default = 20
+//	// mimimum of 2 for StealthChop auto tuning
+//	void setPowerDownDelay(uint8_t power_down_delay);
+//
+//	// mimimum of 2 when using multiple serial addresses
+//	// in bidirectional communication
+//	const static uint8_t REPLY_DELAY_MAX = 15;
+//	void setReplyDelay(uint8_t delay);
+//
+//	void moveAtVelocity(int32_t microsteps_per_period);
+//	void moveUsingStepDirInterface();
+//
+//	void enableStealthChop();
+//	void disableStealthChop();
+//
+//	void setStealthChopDurationThreshold(uint32_t duration_threshold);
+//
+//	void setStallGuardThreshold(uint8_t stall_guard_threshold);
+//
+//	// lower_threshold: min = 1, max = 15
+//	// upper_threshold: min = 0, max = 15, 0-2 recommended
+//	void enableCoolStep(uint8_t lower_threshold = 1,
+//			uint8_t upper_threshold = 0);
+//	void disableCoolStep();
+//	enum CurrentIncrement {
+//		CURRENT_INCREMENT_1 = 0,
+//		CURRENT_INCREMENT_2 = 1,
+//		CURRENT_INCREMENT_4 = 2,
+//		CURRENT_INCREMENT_8 = 3,
+//	};
+//	void setCoolStepCurrentIncrement(CurrentIncrement current_increment);
+//	enum MeasurementCount {
+//		MEASUREMENT_COUNT_32 = 0,
+//		MEASUREMENT_COUNT_8 = 1,
+//		MEASUREMENT_COUNT_2 = 2,
+//		MEASUREMENT_COUNT_1 = 3,
+//	};
+//	void setCoolStepMeasurementCount(MeasurementCount measurement_count);
+//	void setCoolStepDurationThreshold(uint32_t duration_threshold);
+//
+//	void enableAnalogCurrentScaling();
+//	void disableAnalogCurrentScaling();
+//
+//	void useExternalSenseResistors();
+//	void useInternalSenseResistors();
+//	uint16_t constrain(uint16_t,uint16_t,uint16_t);
+//	uint8_t map(uint8_t,uint8_t, uint8_t, uint8_t,uint8_t);
+//	// bidirectional methods
+//	uint8_t getVersion();
+//
+//	// if driver is not communicating, check power and communication connections
+//	bool isCommunicating();
+//
+//	// check to make sure TMC2209 is properly setup and communicating
+//	bool isSetupAndCommunicating();
+//
+//	// driver may be communicating but not setup if driver power is lost then
+//	// restored after setup so that defaults are loaded instead of setup options
+//	bool isCommunicatingButNotSetup();
+//
+//	// driver may also be disabled by the hardware enable input pin
+//	// this pin must be grounded or disconnected before driver may be enabled
+//	bool hardwareDisabled();
+//
+//	uint16_t getIOPins();
+//
+//	uint16_t getMicrostepsPerStep();
+//
+//	struct Settings {
+//		bool is_communicating;
+//		bool is_setup;
+//		bool software_enabled;
+//		uint16_t microsteps_per_step;
+//		bool inverse_motor_direction_enabled;
+//		bool stealth_chop_enabled;
+//		uint8_t standstill_mode;
+//		uint8_t irun_percent;
+//		uint8_t irun_register_value;
+//		uint8_t ihold_percent;
+//		uint8_t ihold_register_value;
+//		uint8_t iholddelay_percent;
+//		uint8_t iholddelay_register_value;
+//		bool automatic_current_scaling_enabled;
+//		bool automatic_gradient_adaptation_enabled;
+//		uint8_t pwm_offset;
+//		uint8_t pwm_gradient;
+//		bool cool_step_enabled;
+//		bool analog_current_scaling_enabled;
+//		bool internal_sense_resistors_enabled;
+//	};
+//	Settings getSettings();
+//
 	struct Status {
 		uint32_t over_temperature_warning :1;
 		uint32_t over_temperature_shutdown :1;
@@ -179,18 +179,18 @@ public:
 	};
 	const static uint8_t CURRENT_SCALING_MAX = 31;
 	Status getStatus();
-
-	uint32_t readDrvStatusBytes();
-	uint8_t getGlobalStatus();
-
-	uint8_t getInterfaceTransmissionCounter();
-	uint32_t getInterstepDuration();
-	uint16_t getStallGuardResult();
-	uint8_t getPwmScaleSum();
-	int16_t getPwmScaleAuto();
-	uint8_t getPwmOffsetAuto();
-	uint8_t getPwmGradientAuto();
-	uint16_t getMicrostepCounter();
+//
+//	uint32_t readDrvStatusBytes();
+//	uint8_t getGlobalStatus();
+//
+//	uint8_t getInterfaceTransmissionCounter();
+//	uint32_t getInterstepDuration();
+//	uint16_t getStallGuardResult();
+//	uint8_t getPwmScaleSum();
+//	int16_t getPwmScaleAuto();
+//	uint8_t getPwmOffsetAuto();
+//	uint8_t getPwmGradientAuto();
+//	uint16_t getMicrostepCounter();
 
 private:
 
@@ -200,10 +200,10 @@ private:
 	UART_HandleTypeDef *tmcuart;
 
 	void initialize(long serial_baud_rate = 115200, SerialAddress serial_address = SERIAL_ADDRESS_0);
-	int serialAvailable();
-	size_t serialWrite(uint8_t c);
-	int serialRead();
-	void serialFlush();
+//	int serialAvailable();
+//	size_t serialWrite(uint8_t c);
+//	int serialRead();
+//	void serialFlush();
 
 	// Serial Settings
 	const static uint8_t BYTE_MAX_VALUE = 0xFF;
@@ -486,38 +486,38 @@ private:
 	void setOperationModeToSerial(SerialAddress serial_address);
 
 	void setRegistersToDefaults();
-	void readAndStoreRegisters();
+//	void readAndStoreRegisters();
 
 	bool serialOperationMode();
 
-	void minimizeMotorCurrent();
+//	void minimizeMotorCurrent();
 
 	uint32_t reverseData(uint32_t data);
 	template<typename Datagram>
 	uint8_t calculateCrc(Datagram &datagram, uint8_t datagram_size);
 	template<typename Datagram>
 	void sendDatagramUnidirectional(Datagram &datagram, uint8_t datagram_size);
-	template<typename Datagram>
-	void sendDatagramBidirectional(Datagram &datagram, uint8_t datagram_size);
+//	template<typename Datagram>
+//	void sendDatagramBidirectional(Datagram &datagram, uint8_t datagram_size);
 
 	void write(uint8_t register_address, uint32_t data);
-	uint32_t read(uint8_t register_address);
+//	uint32_t read(uint8_t register_address);
 
-	uint8_t percentToCurrentSetting(uint8_t percent);
-	uint8_t currentSettingToPercent(uint8_t current_setting);
-	uint8_t percentToHoldDelaySetting(uint8_t percent);
-	uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting);
-
-	uint8_t pwmAmplitudeToPwmAmpl(uint8_t pwm_amplitude);
-	uint8_t pwmAmplitudeToPwmGrad(uint8_t pwm_amplitude);
+//	uint8_t percentToCurrentSetting(uint8_t percent);
+//	uint8_t currentSettingToPercent(uint8_t current_setting);
+//	uint8_t percentToHoldDelaySetting(uint8_t percent);
+//	uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting);
+//
+//	uint8_t pwmAmplitudeToPwmAmpl(uint8_t pwm_amplitude);
+//	uint8_t pwmAmplitudeToPwmGrad(uint8_t pwm_amplitude);
 
 	void writeStoredGlobalConfig();
-	uint32_t readGlobalConfigBytes();
-	void writeStoredDriverCurrent();
+//	uint32_t readGlobalConfigBytes();
+//	void writeStoredDriverCurrent();
 	void writeStoredChopperConfig();
-	uint32_t readChopperConfigBytes();
-	void writeStoredPwmConfig();
-	uint32_t readPwmConfigBytes();
+//	uint32_t readChopperConfigBytes();
+//	void writeStoredPwmConfig();
+//	uint32_t readPwmConfigBytes();
 };
 
 #endif

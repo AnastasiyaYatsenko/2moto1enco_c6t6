@@ -88,10 +88,10 @@ public:
 	int OpenGripper();				   // Open Gripper
 	int CloseGripper();				   // Close Gripper
 	int SetGripper(int);				   // Set Gripper
-	int GetLastPosition();			   // set last positions to encoder value
+//	int GetLastPosition();			   // set last positions to encoder value
 	int Move2Motors(float, float); // move 2 mottors simultaneously
-	int MoveLinear(float);
-	int MoveAngle(float);
+//	int MoveLinear(float);
+//	int MoveAngle(float);
 	int MoveCorrectPosition();
 	//	int SetMicrosteps(uint16_t microsteps_per_step); //set microsteps per step
 	int SetSettEncoders(SPI_HandleTypeDef &arm_hspi1T,
