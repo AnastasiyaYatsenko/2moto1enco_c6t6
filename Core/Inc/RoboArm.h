@@ -24,8 +24,7 @@
 // #define encAmendment 5461
 // #define encAmendment 10923
 
-class RoboArm
-{
+class RoboArm{
 public:
 	float linearStepsMil = motorStep * drvMicroSteps / (beltRatio * spoolStep);
 	// Settings for moto/rs

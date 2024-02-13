@@ -18,7 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+//#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -52,9 +52,9 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
-osThreadId defaultTaskHandle;
-osThreadId myAMT22TaskHandle;
-osThreadId myUARTTaskHandle;
+//osThreadId defaultTaskHandle;
+//osThreadId myAMT22TaskHandle;
+//osThreadId myUARTTaskHandle;
 /* USER CODE BEGIN PV */
 
 uint8_t rx_index = 0;
@@ -99,10 +99,10 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
-void StartDefaultTask(void const * argument);
-void StartAMT22Data(void const * argument);
-void StartUARTData(void const * argument);
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+//void StartDefaultTask(void const * argument);
+//void StartAMT22Data(void const * argument);
+//void StartUARTData(void const * argument);
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 /* USER CODE BEGIN PFP */
 
@@ -147,78 +147,112 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART1_UART_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
-  MX_SPI1_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
   MX_TIM3_Init();
+  MX_USART2_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  HAL_TIM_Base_Init(&htim1);
+  HAL_TIM_Base_Init(&htim2);
 
-	HAL_TIM_Base_Init(&htim1);
-	HAL_TIM_Base_Init(&htim2);
+  arm.SetSettMotors(huart2,htim1, htim2, htim3, Dir1_GPIO_Port, Dir1_Pin,
+		  Dir2_GPIO_Port, Dir2_Pin, Dir3_GPIO_Port, Dir3_Pin, En1_GPIO_Port,
+		  En1_Pin, En2_GPIO_Port, En2_Pin, En3_GPIO_Port, En3_Pin);
 
-	arm.SetSettMotors(huart2,htim1, htim2, htim3, Dir1_GPIO_Port, Dir1_Pin,
-			Dir2_GPIO_Port, Dir2_Pin, Dir3_GPIO_Port, Dir3_Pin, En1_GPIO_Port,
-			En1_Pin, En2_GPIO_Port, En2_Pin, En3_GPIO_Port, En3_Pin);
-
-	arm.SetSettEncoders(hspi1, CS1_GPIO_Port, CS1_Pin, CS2_GPIO_Port, CS2_Pin,
-			14);
-	un_now.params.hold = 0;
-//	arm.SetMicrosteps(8);
-//	arm.SetSoftwareZero();
-//	arm.SetZeroEncoders();
-
-	//steppingyakkazavmaxim(15000, 12000);
-
+  arm.SetSettEncoders(hspi1, CS1_GPIO_Port, CS1_Pin, CS2_GPIO_Port, CS2_Pin,
+		  14);
+  un_now.params.hold = 0;
   /* USER CODE END 2 */
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-	/* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-	/* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-	/* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-	/* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
-
-  /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-  /* definition and creation of myAMT22Task */
-  osThreadDef(myAMT22Task, StartAMT22Data, osPriorityIdle, 0, 128);
-  myAMT22TaskHandle = osThreadCreate(osThread(myAMT22Task), NULL);
-
-  /* definition and creation of myUARTTask */
-  osThreadDef(myUARTTask, StartUARTData, osPriorityIdle, 0, 128);
-  myUARTTaskHandle = osThreadCreate(osThread(myUARTTask), NULL);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-	/* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* Start scheduler */
-  osKernelStart();
-
-  /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//  HAL_UART_Receive_IT (&huart1, str, 1);
+  HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
+  arm.setPrintState(true);
 
-	while (1) {
-
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	}
+	  if (startFirstMove) {
+		  startFirstMove = false;
+
+		  if (un_now.params.hold != 0 &&
+				  abs(un_now.params.ang - un_to.params.ang) < 0.001 &&
+				  abs(un_now.params.lin - un_to.params.lin) < 0.001) {
+			  allowMove = false;
+			  un_now.params.hold = 0;
+			  arm.SetGripper(0);
+		  }
+		  while (!allowMove) {}
+		  if (allowMove) {
+			  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
+		  }
+	  }
+	  if (timerFT1 && timerFT2) {
+		  timerFT1 = false;
+		  timerFT2 = false;
+		  un_now.params.lin = un_to.params.lin;
+		  un_now.params.ang = un_to.params.ang;
+
+		  if (un_now.params.hold != un_to.params.hold) {
+			  gripperMoveFinished = false;
+			  un_now.params.hold = un_to.params.hold;
+			  arm.SetGripper(un_to.params.hold);
+		  }
+		  while (!gripperMoveFinished) {}
+		  if (gripperMoveFinished) {
+			  un_send.params.lin = 0;
+			  un_send.params.ang = 0;
+			  un_send.params.hold = 10;
+			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+					  12);
+		  }
+
+	  }
+
+	  if (arm.getPrintState() && sendDataFlag) {
+		  sendDataFlag = false;
+
+		  float lin = arm.GetLin();
+		  un_send.params.lin = arm.ShiftZeroLin(lin);
+
+		  float ang = arm.GetAng();
+		  un_send.params.ang = arm.ShiftZeroAng(ang);
+
+		  un_send.params.hold = un_now.params.hold;
+
+		  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+				  12);
+
+	  }
+
+	  if (stopHand) {
+		  stopHand = false;
+		  arm.EmergencyStop();
+		  un_send.params.lin = 0;
+		  un_send.params.ang = 0;
+		  un_send.params.hold = 10;
+		  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+				  12);
+	  }
+
+	  if (setZeroFlag) {
+		  setZeroFlag = false;
+		  //			arm.SetZeroEncoders();
+		  arm.SetSoftwareZero();
+		  un_send.params.lin = 0;
+		  un_send.params.ang = 0;
+		  un_send.params.hold = 10;
+		  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+				  12);
+	  }
+
+	  HAL_Delay(10);
+  }
   /* USER CODE END 3 */
 }
 
@@ -644,222 +678,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 /* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
- * @brief  Function implementing the defaultTask thread.
- * @param  argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
-{
-  /* USER CODE BEGIN 5 */
-	arm.setPrintState(false);
-	/* Infinite loop */
-	for (;;) {
-		if (startFirstMove) {
-			startFirstMove = false;
-//			float angle = arm.UnshiftZeroAng(un.params.ang);
-//			uint16_t distance = arm.UnshiftZeroLin(un.params.lin);
-//			arm.Move2Motors(angle, distance);
-//			float ang_delta = abs(un_now.params.ang - un_to.params.ang);
-//			float lin_delta = abs(un_now.params.lin - un_to.params.lin);
-			if (un_now.params.hold != 0){ //&&
-//					abs(un_now.params.ang - un_to.params.ang) < 0.001 &&
-//					abs(un_now.params.lin - un_to.params.lin) < 0.001) {
-				allowMove = false;
-				un_now.params.hold = 0;
-				arm.SetGripper(0);
-//				allowMove = false;
-//				un_now.params.hold = 0;
-			}
-			while (!allowMove) {}
-			if (allowMove) {
-				arm.Move2Motors(un_to.params.ang, un_to.params.lin);
-			}
-//			arm.correctPosition();
-//			arm.Move2MotorsSimu(un_get.params.ang, un_get.params.lin);
-//			arm.Move2MotorsSimu(recAngleF, recDist);
-			//steppingyakkazavmaxim(2000, 230);
-		}
-
-		if (timerFT1 && timerFT2) {
-
-			timerFT1 = false;
-			timerFT2 = false;
-			un_now.params.lin = un_to.params.lin;
-			un_now.params.ang = un_to.params.ang;
-
-			if (un_now.params.hold != un_to.params.hold) {
-				gripperMoveFinished = false;
-				un_now.params.hold = un_to.params.hold;
-				arm.SetGripper(un_to.params.hold);
-//				gripperMoveFinished = false;
-//				un_now.params.hold = un_to.params.hold;
-			}
-			while (!gripperMoveFinished) {}
-			if (gripperMoveFinished) {
-				un_send.params.lin = 0;
-				un_send.params.ang = 0;
-				un_send.params.hold = 10;
-				HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					12);
-			}
-
-			// SEND MSG BACK TO RASPBERRY
-
-		//	arm.correctPosition();
-
-		}
-
-		osDelay(1);
-	}
-  /* USER CODE END 5 */
-}
-
-/* USER CODE BEGIN Header_StartAMT22Data */
-/**
- * @brief Function implementing the myAMT22Task thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartAMT22Data */
-void StartAMT22Data(void const * argument)
-{
-  /* USER CODE BEGIN StartAMT22Data */
-
-	/* Infinite loop */
-	for (;;) {
-
-
-//		char str[100];
-//		uint32_t posnowT = arm.GetPosEncoders(1);
-//		float angleT = arm.GetAngleEncoders(posnowT) * 100;
-//		sprintf(str, "x: enc: %d | ang: %d \n", posnowT, (uint16_t) angleT);
-//		HAL_UART_Transmit(&huart1, (uint8_t*) str, strlen(str),
-//				HAL_MAX_DELAY);
-//
-//		posnowT = arm.GetPosEncoders(2);
-//		angleT = arm.GetAngleEncoders(posnowT) * 100;
-//
-//		float distPsteps = angleT * (motorStep * drvMicroSteps)
-//				* (6.4516129 / 360);
-//		uint32_t mils = distPsteps / arm.linearStepsMil;
-//
-//		sprintf(str, "y: enc: %d | ang: %d | mm: %d \n", posnowT,
-//				(uint16_t) angleT, mils);
-//
-//		HAL_UART_Transmit(&huart1, (uint8_t*) str, strlen(str),
-//				HAL_MAX_DELAY);
-
-
-		osDelay(1000);
-	}
-  /* USER CODE END StartAMT22Data */
-}
-
-/* USER CODE BEGIN Header_StartUARTData */
-/**
- * @brief Function implementing the myUARTTask thread.
- * @param argument: Not used
- * @retval None
- */
-/* USER CODE END Header_StartUARTData */
-void StartUARTData(void const * argument)
-{
-  /* USER CODE BEGIN StartUARTData */
-	HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
-//	uint32_t posnowT_1, posnowT_2;
-//	float angleT = 0;
-//	uint32_t linearDist = 0;
-//	flagReadEnc = 1;
-//	uint32_t distPmm = 0;
-	arm.setPrintState(true);
-	/* Infinite loop */
-	for (;;) {
-
-		if (arm.getPrintState() && sendDataFlag) {
-			sendDataFlag = false;
-
-//			int attempts = 0;
-//
-//			posnowT_1 = arm.GetPosEncoders(1);
-////			//if the position returned was 0xFFFF we know that there was an error calculating the checksum
-//			//make 3 attempts for position. we will pre-increment attempts because we'll use the number later and want an accurate count
-//			while (posnowT_1 == 0xFFFF && ++attempts < 3)
-//				posnowT_1 = arm.GetPosEncoders(1); //try again
-//
-////			float ang = posnowT_1*360/16384;
-//			float ang_actual = arm.GetAngleEncoders(posnowT_1);
-//			float ang = ang_actual + arm.defaultAngle;//arm.ShiftZeroAng(ang_actual);
-//
-//			attempts = 0;
-////			un_send.params.ang = angleT;
-//
-//			posnowT_2 = arm.GetPosEncoders(2);
-//			while (posnowT_2 == 0xFFFF && ++attempts < 3)
-//				posnowT_2 = arm.GetPosEncoders(2); //try again
-//
-//			float ang_pos = arm.GetAngleEncoders(posnowT_2);
-//			float pos_actual = arm.GetLinEncoders(ang_pos);
-//			float pos = pos_actual;//arm.ShiftZeroLin(pos_actual);
-//			angleT = arm.GetAngleEncoders(posnowT) * 100;
-//
-//			float distPsteps = angleT * (motorStep * drvMicroSteps)
-//					* (6.45 / 360);
-//			uint32_t mils = distPsteps / arm.linearStepsMil;
-//
-//			un_send.params.lin = mils;
-//			un_send.params.hold = 0;
-			float lin = arm.GetLin();
-			un_send.params.lin = arm.ShiftZeroLin(lin);
-
-			float ang = arm.GetAng();
-			un_send.params.ang = arm.ShiftZeroAng(ang);
-
-			un_send.params.hold = un_now.params.hold;
-
-//			uint8_t send_arr[] = {0x01,0x02,0x03,0x04,
-//					0x05,0x06,0x07,0x08,
-//					0x09,0x0a,0x0b,0x0c};
-//
-//			size_t s = sizeof(un_send);
-
-//			sprintf(str, "%.2f:", un_send.params.ang);//, send_params.lin, 100);
-			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					12);
-
-//			HAL_UART_Transmit(&huart1, (uint8_t*)str, sizeof(str), 12);
-//			sendDataFlag = false;
-
-		}
-
-		if (stopHand) {
-			stopHand = false;
-			arm.EmergencyStop();
-			un_send.params.lin = 0;
-			un_send.params.ang = 0;
-			un_send.params.hold = 10;
-			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					12);
-		}
-
-		if (setZeroFlag) {
-			setZeroFlag = false;
-//			arm.SetZeroEncoders();
-			arm.SetSoftwareZero();
-			un_send.params.lin = 0;
-			un_send.params.ang = 0;
-			un_send.params.hold = 10;
-			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					12);
-		}
-
-		osDelay(500);
-	}
-  /* USER CODE END StartUARTData */
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode
