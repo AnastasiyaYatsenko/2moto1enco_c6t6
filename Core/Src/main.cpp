@@ -70,6 +70,9 @@ bool setZeroFlag = false;
 bool timerFT1 = false;
 bool timerFT2 = false;
 bool startCorrectPos = false;
+bool posCorrected = false;
+
+float accuracy = 0.05;
 
 float recAngleF = 0.0;
 uint16_t recDist = 0;
@@ -180,9 +183,9 @@ int main(void)
 	  if (startFirstMove) {
 		  startFirstMove = false;
 
-		  if (un_now.params.hold != 0 &&
-				  abs(un_now.params.ang - un_to.params.ang) < 0.001 &&
-				  abs(un_now.params.lin - un_to.params.lin) < 0.001) {
+		  if (un_now.params.hold != 0){// &&
+				  //!(abs(un_now.params.ang - un_to.params.ang) < 0.001 &&
+				  //  abs(un_now.params.lin - un_to.params.lin) < 0.001)) {
 			  allowMove = false;
 			  un_now.params.hold = 0;
 			  arm.SetGripper(0);
@@ -190,37 +193,90 @@ int main(void)
 		  while (!allowMove) {}
 		  if (allowMove) {
 			  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
+//			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
 		  }
 	  }
+
 	  if (timerFT1 && timerFT2) {
-		  timerFT1 = false;
-		  timerFT2 = false;
-		  un_now.params.lin = un_to.params.lin;
-		  un_now.params.ang = un_to.params.ang;
 
-		  if (un_now.params.hold != un_to.params.hold) {
-			  gripperMoveFinished = false;
-			  un_now.params.hold = un_to.params.hold;
-			  arm.SetGripper(un_to.params.hold);
-		  }
-		  while (!gripperMoveFinished) {}
-		  if (gripperMoveFinished) {
-			  un_send.params.lin = 0;
-			  un_send.params.ang = 0;
-			  un_send.params.hold = 10;
-			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					  12);
-		  }
+		  float lin = arm.GetLin();
+		  //un_send.params.lin = lin;
+		  un_now.params.lin = arm.ShiftZeroLin(lin);
 
+		  float ang = arm.GetAng();
+		  //un_send.params.ang = ang;
+		  un_now.params.ang = arm.ShiftZeroAng(ang);
+
+		  if (posCorrected) {
+			  timerFT1 = false;
+			  timerFT2 = false;
+			  posCorrected = false;
+
+			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
+					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
+				  startCorrectPos = true;
+				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+			  } else {
+				  startCorrectPos = false;
+				  if (un_now.params.hold != un_to.params.hold) {
+					  gripperMoveFinished = false;
+					  un_now.params.hold = un_to.params.hold;
+					  arm.SetGripper(un_to.params.hold);
+				  }
+				  while (!gripperMoveFinished) {}
+				  if (gripperMoveFinished) {
+					  un_send.params.lin = 0;
+					  un_send.params.ang = 0;
+					  un_send.params.hold = 10;
+					  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+							  12);
+				  }
+			  }
+		  } else {
+			  startCorrectPos = true;
+			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+		  }
 	  }
+
+//	  if (timerFT1 && timerFT2 && !posCorrected) {
+//		  timerFT1 = false;
+//		  timerFT2 = false;
+//		  startCorrectPos = true;
+//		  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+//	  }
+//	  if (timerFT1 && timerFT2 && posCorrected) {
+//		  timerFT1 = false;
+//		  timerFT2 = false;
+//		  posCorrected = false;
+//		  startCorrectPos = false;
+//		  un_now.params.lin = un_to.params.lin;
+//		  un_now.params.ang = un_to.params.ang;
+//
+//		  if (un_now.params.hold != un_to.params.hold) {
+//			  gripperMoveFinished = false;
+//			  un_now.params.hold = un_to.params.hold;
+//			  arm.SetGripper(un_to.params.hold);
+//		  }
+//		  while (!gripperMoveFinished) {}
+//		  if (gripperMoveFinished) {
+//			  un_send.params.lin = 0;
+//			  un_send.params.ang = 0;
+//			  un_send.params.hold = 10;
+//			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+//					  12);
+//		  }
+//
+//	  }
 
 	  if (arm.getPrintState() && sendDataFlag) {
 		  sendDataFlag = false;
 
 		  float lin = arm.GetLin();
+//		  un_send.params.lin = lin;
 		  un_send.params.lin = arm.ShiftZeroLin(lin);
 
 		  float ang = arm.GetAng();
+//		  un_send.params.ang = ang;
 		  un_send.params.ang = arm.ShiftZeroAng(ang);
 
 		  un_send.params.hold = un_now.params.hold;
@@ -242,8 +298,8 @@ int main(void)
 
 	  if (setZeroFlag) {
 		  setZeroFlag = false;
-		  //			arm.SetZeroEncoders();
-		  arm.SetSoftwareZero();
+		  arm.SetZeroEncoders();
+//		  arm.SetSoftwareZero();
 		  un_send.params.lin = 0;
 		  un_send.params.ang = 0;
 		  un_send.params.hold = 10;
@@ -702,6 +758,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			cntImpulse1 = 0;
 			arm.stateMoveM1 = false;
 			timerFT1 = true;
+			if (startCorrectPos) {posCorrected = true;}
 		}
 
 	} else if (htim->Instance == TIM2) {
@@ -714,6 +771,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			cntImpulse2 = 0;
 			arm.stateMoveM2 = false;
 			timerFT2 = true;
+			if (startCorrectPos) {posCorrected = true;}
 		}
 	} else if (htim->Instance == TIM3) {
 		cntImpulse3++;

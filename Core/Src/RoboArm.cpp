@@ -114,6 +114,114 @@ int RoboArm::MoveCorrectPosition() {
 }
 */
 
+
+int RoboArm::MoveCorrectPosition(float angle, float distance) {
+
+	// TIM1 Х  enc1 -  угол 360  -  8 оборотов движка на 1 оборот энкодера
+	// TIM2  Y  enc2 - линейный -  6,4516129 оборотов движка (это целое линейное перемещение с запасом) на 1 оборот энкодера
+
+	HAL_TIM_PWM_Stop(htim1M1, TIM_CHANNEL_1);      //остановили PWM таймера
+	HAL_TIM_PWM_Stop(htim2M2, TIM_CHANNEL_2);
+	HAL_TIM_Base_Stop_IT(htim1M1);				// остановили прерывание таймеров
+	HAL_TIM_Base_Stop_IT(htim2M2);
+
+	SetEnable(1, false);
+	SetEnable(2, false);
+
+//	GetLastPosition(); //update -> lastPosAngle lastPosLinear from ENCODER
+	lastPosAngle_Enc = GetAng();
+	lastPosLinear_Enc = GetLin();
+
+	float lastPosAngle = ShiftZeroAng(lastPosAngle_Enc);
+	float lastPosLinear = ShiftZeroLin(lastPosLinear_Enc);
+
+//	float lastPosAngle = lastPosAngle_Enc;
+//	float lastPosLinear = lastPosLinear_Enc;
+
+	float pos_ang = abs(lastPosAngle - angle);
+	float inverse_pos_ang = abs(360.0 - pos_ang);
+	float actualPosAngle;
+
+	/* виставили в яку сторону ехать мотору*/
+	if (inverse_pos_ang < pos_ang) {
+		actualPosAngle = inverse_pos_ang;
+		if (lastPosAngle < angle) {
+			tmcd_angle.disableInverseMotorDirection();
+		} else if (lastPosAngle > angle) {
+			tmcd_angle.enableInverseMotorDirection();
+		}
+	}
+	else {
+		actualPosAngle = pos_ang;
+		if (lastPosAngle < angle) {
+			tmcd_angle.enableInverseMotorDirection();
+		} else if (lastPosAngle > angle) {
+			tmcd_angle.disableInverseMotorDirection();
+		}
+	}
+
+	if (lastPosLinear < distance) {
+			tmcd_linear.disableInverseMotorDirection();
+		} else if (lastPosLinear > distance) {
+			tmcd_linear.enableInverseMotorDirection();
+		}
+
+	float actualPosDistance = abs(lastPosLinear - distance);
+
+	//set microstepping
+	anglePsteps = (actualPosAngle * (8 * motorStep * drvMicroSteps)) / 360; //angle to steps
+	distPsteps = actualPosDistance * linearStepsMil; //steps to distanse
+
+// 1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36 и 72 - Це можлива обрана максимальна швидкість для мотора з більшої кількістю кроків. Це дільник таймера
+
+//	uint32_t periodM1 = 1200; //reduce to 600-400 mks for 32 microsteps
+	uint32_t periodM1 = 2400;
+	uint32_t psc = 72-1;
+
+	float delimiter=1;
+	float mnoj=1;
+
+	if (anglePsteps > distPsteps) {
+
+		htim1M1->Instance->PSC = psc;
+		htim1M1->Instance->ARR = periodM1;
+		htim1M1->Instance->CCR1 = periodM1/2;
+
+		delimiter = float(anglePsteps) / float(distPsteps);
+		mnoj = ceil(periodM1 * delimiter);
+
+		htim2M2->Instance->PSC = psc;
+		htim2M2->Instance->ARR = mnoj;
+		htim2M2->Instance->CCR2 = mnoj / 2;
+
+	} else if (anglePsteps < distPsteps) {
+
+		htim2M2->Instance->PSC = psc;
+		htim2M2->Instance->ARR = periodM1;
+		htim2M2->Instance->CCR2 = periodM1 / 2;
+
+		delimiter = float(distPsteps) / float(anglePsteps);
+		mnoj = ceil(periodM1 * delimiter);
+
+		htim1M1->Instance->PSC = psc;
+		htim1M1->Instance->ARR = mnoj;
+		htim1M1->Instance->CCR1 = mnoj / 2;
+	}
+
+	stateMoveM1 = true;
+	stateMoveM2 = true;
+
+	SetEnable(1, true);
+	SetEnable(2, true);
+
+	HAL_TIM_PWM_Start(htim1M1, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(htim2M2, TIM_CHANNEL_2);
+	HAL_TIM_Base_Start_IT(htim1M1);
+	HAL_TIM_Base_Start_IT(htim2M2);
+
+	return 0;
+}
+
 //int RoboArm::GetLastPosition() {
 //	int attempts = 0;
 //	uint32_t posnowT_ang = GetPosEncoders(1);
@@ -211,7 +319,7 @@ int RoboArm::Move2Motors(float angle, float distance) {
 // 1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36 и 72 - Це можлива обрана максимальна швидкість для мотора з більшої кількістю кроків. Це дільник таймера
 
 //	uint32_t periodM1 = 1200; //reduce to 600-400 mks for 32 microsteps
-	uint32_t periodM1 = 200;
+	uint32_t periodM1 = 30;
 	uint32_t psc = 72-1;
 
 	float delimiter=1;
@@ -659,7 +767,7 @@ int RoboArm::SetSettMotors(UART_HandleTypeDef &huartTmc,TIM_HandleTypeDef &htim1
 //	tmcd_linear.disableAutomaticCurrentScaling();
 //	tmcd_linear.disableAutomaticGradientAdaptation();
 
-	SetMicrosteps4All(5);
+	SetMicrosteps4All(7);
 
 
 

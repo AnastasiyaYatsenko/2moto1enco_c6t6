@@ -14,7 +14,7 @@
 #include "TMC2209.h"
 // #include "TMC2209.h"
 
-#define drvMicroSteps 32
+#define drvMicroSteps 128
 // #define drvMicroSteps 16
 #define spoolStep 20
 #define motorStep 200
@@ -91,7 +91,7 @@ public:
 	int Move2Motors(float, float); // move 2 mottors simultaneously
 //	int MoveLinear(float);
 //	int MoveAngle(float);
-	int MoveCorrectPosition();
+	int MoveCorrectPosition(float angle, float distance);
 	//	int SetMicrosteps(uint16_t microsteps_per_step); //set microsteps per step
 	int SetSettEncoders(SPI_HandleTypeDef &arm_hspi1T,
 						GPIO_TypeDef *CS_GPIO_Port_Enc1T, uint16_t CS_Pin_Enc1T,
