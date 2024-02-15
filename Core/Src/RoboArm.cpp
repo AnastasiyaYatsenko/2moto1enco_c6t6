@@ -132,11 +132,11 @@ int RoboArm::MoveCorrectPosition(float angle, float distance) {
 	lastPosAngle_Enc = GetAng();
 	lastPosLinear_Enc = GetLin();
 
-	float lastPosAngle = ShiftZeroAng(lastPosAngle_Enc);
-	float lastPosLinear = ShiftZeroLin(lastPosLinear_Enc);
+//	float lastPosAngle = ShiftZeroAng(lastPosAngle_Enc);
+//	float lastPosLinear = ShiftZeroLin(lastPosLinear_Enc);
 
-//	float lastPosAngle = lastPosAngle_Enc;
-//	float lastPosLinear = lastPosLinear_Enc;
+	float lastPosAngle = lastPosAngle_Enc;
+	float lastPosLinear = lastPosLinear_Enc;
 
 	float pos_ang = abs(lastPosAngle - angle);
 	float inverse_pos_ang = abs(360.0 - pos_ang);
@@ -257,11 +257,11 @@ int RoboArm::Move2Motors(float angle, float distance) {
 	lastPosAngle_Enc = GetAng();
 	lastPosLinear_Enc = GetLin();
 
-	float lastPosAngle = ShiftZeroAng(lastPosAngle_Enc);
-	float lastPosLinear = ShiftZeroLin(lastPosLinear_Enc);
+//	float lastPosAngle = ShiftZeroAng(lastPosAngle_Enc);
+//	float lastPosLinear = ShiftZeroLin(lastPosLinear_Enc);
 
-//	float lastPosAngle = lastPosAngle_Enc;
-//	float lastPosLinear = lastPosLinear_Enc;
+	float lastPosAngle = lastPosAngle_Enc;
+	float lastPosLinear = lastPosLinear_Enc;
 
 	float pos_ang = abs(lastPosAngle - angle);
 	float inverse_pos_ang = abs(360.0 - pos_ang);
@@ -501,8 +501,8 @@ int RoboArm::Move2MotorsSimu(float angle, uint16_t distance) {
 */
 
 int RoboArm::factoryReset() {
-//	SetZeroEncoders();
-	SetSoftwareZero();
+	SetZeroEncoders();
+//	SetSoftwareZero();
 	posNowAngle = defaultAngle;
 	posNowDistance = defaultDistanse;
 
@@ -626,6 +626,10 @@ float RoboArm::GetLin() {
 	while (posnowT_2 == 0xFFFF && ++attempts < 3)
 		posnowT_2 = GetPosEncoders(2); //try again
 
+//	if (posnowT_2 == 0xFFFF) {
+//		return -1;
+//	}
+
 	float ang_pos = GetAngleEncoders(posnowT_2);
 	float pos_actual = GetLinEncoders(ang_pos);
 	float pos = pos_actual + defaultDistanse;
@@ -640,6 +644,10 @@ float RoboArm::GetAng() {
 	uint32_t posnowT_1 = GetPosEncoders(1);
 	while (posnowT_1 == 0xFFFF && ++attempts < 3)
 		posnowT_1 = GetPosEncoders(1); //try again
+
+//	if (posnowT_1 == 0xFFFF) {
+//			return -1;
+//	}
 
 	float ang_actual = GetAngleEncoders(posnowT_1);
 	float ang = ang_actual + defaultAngle;//arm.ShiftZeroAng(ang_actual);
@@ -662,8 +670,6 @@ int RoboArm::SetZeroEncoders() {
 }
 
 int RoboArm::SetSoftwareZero() {
-//	ang_zero = GetPosEncoders(1);
-//	lin_zero = GetPosEncoders(2);
 
 	int attempts = 0;
 	uint32_t posnowT_1 = GetPosEncoders(1);

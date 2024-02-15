@@ -1,16 +1,15 @@
-/opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/arm-none-eabi/include/c++/11.3.1/bits/std_abs.h:75:3:constexpr float std::abs(float)	1
-../Core/Src/main.cpp:129:5:int main()	22
-../Core/Src/main.cpp:321:6:void SystemClock_Config()	3
-../Core/Src/main.cpp:365:13:void MX_SPI1_Init()	2
-../Core/Src/main.cpp:403:13:void MX_TIM1_Init()	5
-../Core/Src/main.cpp:468:13:void MX_TIM2_Init()	4
-../Core/Src/main.cpp:517:13:void MX_TIM3_Init()	4
-../Core/Src/main.cpp:566:13:void MX_USART1_UART_Init()	2
-../Core/Src/main.cpp:599:13:void MX_USART2_UART_Init()	2
-../Core/Src/main.cpp:632:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:705:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	9
-../Core/Src/main.cpp:748:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	10
-../Core/Src/main.cpp:806:6:void HAL_GPIO_EXTI_Callback(uint16_t)	5
-../Core/Src/main.cpp:831:6:void Error_Handler()	1
-../Core/Src/main.cpp:839:1:void __static_initialization_and_destruction_0(int, int)	3
-../Core/Src/main.cpp:839:1:cpp)	1
+../Core/Src/main.cpp:129:5:int main()	15
+../Core/Src/main.cpp:316:6:void SystemClock_Config()	3
+../Core/Src/main.cpp:360:13:void MX_SPI1_Init()	2
+../Core/Src/main.cpp:398:13:void MX_TIM1_Init()	5
+../Core/Src/main.cpp:463:13:void MX_TIM2_Init()	4
+../Core/Src/main.cpp:512:13:void MX_TIM3_Init()	4
+../Core/Src/main.cpp:561:13:void MX_USART1_UART_Init()	2
+../Core/Src/main.cpp:594:13:void MX_USART2_UART_Init()	2
+../Core/Src/main.cpp:627:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:700:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	9
+../Core/Src/main.cpp:733:6:void HAL_GPIO_EXTI_Callback(uint16_t)	5
+../Core/Src/main.cpp:764:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	10
+../Core/Src/main.cpp:847:6:void Error_Handler()	1
+../Core/Src/main.cpp:855:1:void __static_initialization_and_destruction_0(int, int)	3
+../Core/Src/main.cpp:855:1:cpp)	1

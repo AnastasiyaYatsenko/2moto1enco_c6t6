@@ -117,7 +117,7 @@ static void MX_USART2_UART_Init(void);
 uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0, step2 = 0;
 bool allowMove = true, gripperMoveFinished = true;
 
-RoboArm arm(120, 124);
+RoboArm arm(240, 124);
 //RoboArm arm(0, 124);
 
 /* USER CODE END 0 */
@@ -183,9 +183,7 @@ int main(void)
 	  if (startFirstMove) {
 		  startFirstMove = false;
 
-		  if (un_now.params.hold != 0){// &&
-				  //!(abs(un_now.params.ang - un_to.params.ang) < 0.001 &&
-				  //  abs(un_now.params.lin - un_to.params.lin) < 0.001)) {
+		  if (un_now.params.hold != 0){
 			  allowMove = false;
 			  un_now.params.hold = 0;
 			  arm.SetGripper(0);
@@ -193,93 +191,90 @@ int main(void)
 		  while (!allowMove) {}
 		  if (allowMove) {
 			  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
-//			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
 		  }
 	  }
+
+	  //з докаткою
+//	  if (timerFT1 && timerFT2) {
+//
+//		  timerFT1 = false;
+//		  timerFT2 = false;
+//
+//		  float lin = arm.GetLin();
+//		  un_send.params.lin = lin; //для АМТ223В-V
+////		  un_now.params.lin = arm.ShiftZeroLin(lin); //для АМТ223С-V
+//
+//		  float ang = arm.GetAng();
+//		  un_send.params.ang = ang; //для АМТ223В-V
+//		  un_now.params.ang = arm.ShiftZeroAng(ang); //для АМТ223С-V
+//		  if (posCorrected) {
+////			  timerFT1 = false;
+////			  timerFT2 = false;
+//			  posCorrected = false;
+//
+//			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
+//					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
+//				  startCorrectPos = true;
+//				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+//			  } else {
+//				  startCorrectPos = false;
+//				  if (un_now.params.hold != un_to.params.hold) {
+//					  gripperMoveFinished = false;
+//					  un_now.params.hold = un_to.params.hold;
+//					  arm.SetGripper(un_to.params.hold);
+//				  }
+//				  while (!gripperMoveFinished) {}
+//				  if (gripperMoveFinished) {
+//					  un_send.params.lin = 0;
+//					  un_send.params.ang = 0;
+//					  un_send.params.hold = 10;
+//					  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+//							  12);
+//				  }
+//			  }
+//		  } else {
+//			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
+//			  					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
+//				  startCorrectPos = true;
+//				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+//			  }
+////			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+//		  }
+//	  }
 
 	  if (timerFT1 && timerFT2) {
+		  timerFT1 = false;
+		  timerFT2 = false;
+		  un_now.params.lin = un_to.params.lin;
+		  un_now.params.ang = un_to.params.ang;
 
-		  float lin = arm.GetLin();
-//		  un_send.params.lin = lin;
-		  un_now.params.lin = arm.ShiftZeroLin(lin);
-
-		  float ang = arm.GetAng();
-//		  un_send.params.ang = ang;
-		  un_now.params.ang = arm.ShiftZeroAng(ang);
-
-		  if (posCorrected) {
-			  timerFT1 = false;
-			  timerFT2 = false;
-			  posCorrected = false;
-
-			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
-					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
-				  startCorrectPos = true;
-				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
-			  } else {
-				  startCorrectPos = false;
-				  if (un_now.params.hold != un_to.params.hold) {
-					  gripperMoveFinished = false;
-					  un_now.params.hold = un_to.params.hold;
-					  arm.SetGripper(un_to.params.hold);
-				  }
-				  while (!gripperMoveFinished) {}
-				  if (gripperMoveFinished) {
-					  un_send.params.lin = 0;
-					  un_send.params.ang = 0;
-					  un_send.params.hold = 10;
-					  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-							  12);
-				  }
-			  }
-		  } else {
-			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
-			  					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
-				  startCorrectPos = true;
-				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
-			  }
-//			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+		  //виставляємо зачеп у потрібну позицію
+		  if (un_now.params.hold != un_to.params.hold) {
+			  gripperMoveFinished = false;
+			  un_now.params.hold = un_to.params.hold;
+			  arm.SetGripper(un_to.params.hold);
 		  }
-	  }
+		  while (!gripperMoveFinished) {}
+		  if (gripperMoveFinished) {
+			  un_send.params.lin = 0;
+			  un_send.params.ang = 0;
+			  un_send.params.hold = 10;
+			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+					  12);
+		  }
 
-//	  if (timerFT1 && timerFT2 && !posCorrected) {
-//		  timerFT1 = false;
-//		  timerFT2 = false;
-//		  startCorrectPos = true;
-//		  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
-//	  }
-//	  if (timerFT1 && timerFT2) {
-//		  timerFT1 = false;
-//		  timerFT2 = false;
-//		  un_now.params.lin = un_to.params.lin;
-//		  un_now.params.ang = un_to.params.ang;
-//
-//		  if (un_now.params.hold != un_to.params.hold) {
-//			  gripperMoveFinished = false;
-//			  un_now.params.hold = un_to.params.hold;
-//			  arm.SetGripper(un_to.params.hold);
-//		  }
-//		  while (!gripperMoveFinished) {}
-//		  if (gripperMoveFinished) {
-//			  un_send.params.lin = 0;
-//			  un_send.params.ang = 0;
-//			  un_send.params.hold = 10;
-//			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-//					  12);
-//		  }
-//
-//	  }
+	  }
 
 	  if (arm.getPrintState() && sendDataFlag) {
 		  sendDataFlag = false;
 
 		  float lin = arm.GetLin();
-//		  un_send.params.lin = lin;
-		  un_send.params.lin = arm.ShiftZeroLin(lin);
+		  un_send.params.lin = lin;
+//		  un_send.params.lin = arm.ShiftZeroLin(lin);
 
 		  float ang = arm.GetAng();
-//		  un_send.params.ang = ang;
-		  un_send.params.ang = arm.ShiftZeroAng(ang);
+		  un_send.params.ang = ang;
+//		  un_send.params.ang = arm.ShiftZeroAng(ang);
 
 		  un_send.params.hold = un_now.params.hold;
 
@@ -300,8 +295,8 @@ int main(void)
 
 	  if (setZeroFlag) {
 		  setZeroFlag = false;
-//		  arm.SetZeroEncoders();
-		  arm.SetSoftwareZero();
+		  arm.SetZeroEncoders();
+//		  arm.SetSoftwareZero();
 		  un_send.params.lin = 0;
 		  un_send.params.ang = 0;
 		  un_send.params.hold = 10;
@@ -735,6 +730,27 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
 }
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == EndCap1_Pin) {
+	    //gripper is fully opened, no move allowed
+		allowMove = false;
+		gripperMoveFinished = true;
+	  } else if (GPIO_Pin == EndCap2_Pin) {
+		//gripper is fully closed, move allowed
+		allowMove = true;
+		gripperMoveFinished = true;
+	  } else if (GPIO_Pin == EndCap3_Pin || GPIO_Pin == EndCap4_Pin) {
+		  //linear motor is on the end of the hand, stop move
+		  HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+		  HAL_TIM_Base_Stop_IT(&htim2);
+		  cntImpulse2 = 0;
+		  arm.stateMoveM2 = false;
+		  timerFT2 = true;
+	  } else {
+	      __NOP();
+	  }
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -803,26 +819,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE END Callback 1 */
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if(GPIO_Pin == EndCap1_Pin) {
-	    //gripper is fully opened, no move allowed
-		allowMove = false;
-		gripperMoveFinished = true;
-	  } else if (GPIO_Pin == EndCap2_Pin) {
-		//gripper is fully closed, move allowed
-		allowMove = true;
-		gripperMoveFinished = true;
-	  } else if (GPIO_Pin == EndCap3_Pin || GPIO_Pin == EndCap4_Pin) {
-		  //linear motor is on the end of the hand, stop move
-		  HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
-		  HAL_TIM_Base_Stop_IT(&htim2);
-		  cntImpulse2 = 0;
-		  arm.stateMoveM2 = false;
-		  timerFT2 = true;
-	  } else {
-	      __NOP();
-	  }
-}
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+//	if(GPIO_Pin == EndCap1_Pin) {
+//	    //gripper is fully opened, no move allowed
+//		allowMove = false;
+//		gripperMoveFinished = true;
+//	  } else if (GPIO_Pin == EndCap2_Pin) {
+//		//gripper is fully closed, move allowed
+//		allowMove = true;
+//		gripperMoveFinished = true;
+//	  } else if (GPIO_Pin == EndCap3_Pin || GPIO_Pin == EndCap4_Pin) {
+//		  //linear motor is on the end of the hand, stop move
+//		  HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+//		  HAL_TIM_Base_Stop_IT(&htim2);
+//		  cntImpulse2 = 0;
+//		  arm.stateMoveM2 = false;
+//		  timerFT2 = true;
+//	  } else {
+//	      __NOP();
+//	  }
+//}
 
 /**
   * @brief  This function is executed in case of error occurrence.
