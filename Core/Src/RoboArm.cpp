@@ -175,7 +175,7 @@ int RoboArm::MoveCorrectPosition(float angle, float distance) {
 // 1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36 и 72 - Це можлива обрана максимальна швидкість для мотора з більшої кількістю кроків. Це дільник таймера
 
 //	uint32_t periodM1 = 1200; //reduce to 600-400 mks for 32 microsteps
-	uint32_t periodM1 = 2400;
+	uint32_t periodM1 = 1200;
 	uint32_t psc = 72-1;
 
 	float delimiter=1;

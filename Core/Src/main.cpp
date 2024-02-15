@@ -200,11 +200,11 @@ int main(void)
 	  if (timerFT1 && timerFT2) {
 
 		  float lin = arm.GetLin();
-		  //un_send.params.lin = lin;
+//		  un_send.params.lin = lin;
 		  un_now.params.lin = arm.ShiftZeroLin(lin);
 
 		  float ang = arm.GetAng();
-		  //un_send.params.ang = ang;
+//		  un_send.params.ang = ang;
 		  un_now.params.ang = arm.ShiftZeroAng(ang);
 
 		  if (posCorrected) {
@@ -233,8 +233,12 @@ int main(void)
 				  }
 			  }
 		  } else {
-			  startCorrectPos = true;
-			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
+			  					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
+				  startCorrectPos = true;
+				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
+			  }
+//			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
 		  }
 	  }
 
@@ -244,11 +248,9 @@ int main(void)
 //		  startCorrectPos = true;
 //		  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
 //	  }
-//	  if (timerFT1 && timerFT2 && posCorrected) {
+//	  if (timerFT1 && timerFT2) {
 //		  timerFT1 = false;
 //		  timerFT2 = false;
-//		  posCorrected = false;
-//		  startCorrectPos = false;
 //		  un_now.params.lin = un_to.params.lin;
 //		  un_now.params.ang = un_to.params.ang;
 //
@@ -298,8 +300,8 @@ int main(void)
 
 	  if (setZeroFlag) {
 		  setZeroFlag = false;
-		  arm.SetZeroEncoders();
-//		  arm.SetSoftwareZero();
+//		  arm.SetZeroEncoders();
+		  arm.SetSoftwareZero();
 		  un_send.params.lin = 0;
 		  un_send.params.ang = 0;
 		  un_send.params.hold = 10;
