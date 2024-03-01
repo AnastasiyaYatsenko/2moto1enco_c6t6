@@ -67,6 +67,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 2moto1enco_c6t6a.list \
 
+OBJCOPY_BIN += \
+2moto1enco_c6t6a.bin \
+
 
 # All Target
 all: main-build
@@ -90,12 +93,17 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+2moto1enco_c6t6a.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "2moto1enco_c6t6a.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) 2moto1enco_c6t6a.elf 2moto1enco_c6t6a.list 2moto1enco_c6t6a.map default.size.stdout
+	-$(RM) 2moto1enco_c6t6a.bin 2moto1enco_c6t6a.elf 2moto1enco_c6t6a.list 2moto1enco_c6t6a.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

@@ -9,7 +9,7 @@
 ../Core/Src/main.cpp:627:13:void MX_GPIO_Init()	1
 ../Core/Src/main.cpp:700:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	9
 ../Core/Src/main.cpp:733:6:void HAL_GPIO_EXTI_Callback(uint16_t)	5
-../Core/Src/main.cpp:764:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	10
-../Core/Src/main.cpp:847:6:void Error_Handler()	1
-../Core/Src/main.cpp:855:1:void __static_initialization_and_destruction_0(int, int)	3
-../Core/Src/main.cpp:855:1:cpp)	1
+../Core/Src/main.cpp:769:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	7
+../Core/Src/main.cpp:852:6:void Error_Handler()	1
+../Core/Src/main.cpp:860:1:void __static_initialization_and_destruction_0(int, int)	3
+../Core/Src/main.cpp:860:1:cpp)	1

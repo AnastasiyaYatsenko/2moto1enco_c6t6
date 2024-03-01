@@ -80,7 +80,7 @@ public:
 	bool stateMoveM1 = false, stateMoveM2 = false, stateMoveM3= false;
 	float defaultAngle, defaultDistanse; // стандартний кут //0 120 240 та дистанція 124 мм
 	bool stateMovement[2];
-	bool inverseLinZero = false;
+	bool inverseLinZero = true;
 
 
 	RoboArm(uint8_t, uint8_t);

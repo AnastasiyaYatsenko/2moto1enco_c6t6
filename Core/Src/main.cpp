@@ -59,7 +59,7 @@ UART_HandleTypeDef huart2;
 
 uint8_t rx_index = 0;
 uint8_t rx_data[20];
-uint8_t rx_buffer[12]; //!!!!!
+uint8_t rx_buffer[12];
 uint8_t transfer_cplt = 0;
 
 bool startFirstMove = false;
@@ -117,7 +117,7 @@ static void MX_USART2_UART_Init(void);
 uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0, step2 = 0;
 bool allowMove = true, gripperMoveFinished = true;
 
-RoboArm arm(240, 124);
+RoboArm arm(0, 124);
 //RoboArm arm(0, 124);
 
 /* USER CODE END 0 */
@@ -569,7 +569,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 9600;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -735,10 +735,15 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	    //gripper is fully opened, no move allowed
 		allowMove = false;
 		gripperMoveFinished = true;
+
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+		HAL_TIM_Base_Stop_IT(&htim3);
 	  } else if (GPIO_Pin == EndCap2_Pin) {
 		//gripper is fully closed, move allowed
 		allowMove = true;
 		gripperMoveFinished = true;
+		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+		HAL_TIM_Base_Stop_IT(&htim3);
 	  } else if (GPIO_Pin == EndCap3_Pin || GPIO_Pin == EndCap4_Pin) {
 		  //linear motor is on the end of the hand, stop move
 		  HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
@@ -792,23 +797,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			if (startCorrectPos) {posCorrected = true;}
 		}
 	} else if (htim->Instance == TIM3) {
-		cntImpulse3++;
-		if (cntImpulse3 >= arm.gripperPsteps) {
-			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
-			HAL_TIM_Base_Stop_IT(&htim3);
-			arm.SetEnable(3, false);
-			cntImpulse3 = 0;
-			arm.stateMoveM3 = false;
-
-			//TEMPORARY, should be removed when physical gripper with encaps will pass the tests
-			if (un_now.params.hold == 1) {
-				allowMove = false;
-				gripperMoveFinished = true;
-			} else {// if (un_now.params.hold == 0) {
-				allowMove = true;
-				gripperMoveFinished = true;
-			}
-		}
+//		cntImpulse3++;
+//		if (cntImpulse3 >= arm.gripperPsteps) {
+//			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+//			HAL_TIM_Base_Stop_IT(&htim3);
+//			arm.SetEnable(3, false);
+//			cntImpulse3 = 0;
+//			arm.stateMoveM3 = false;
+//
+//			//TEMPORARY, should be removed when physical gripper with encaps will pass the tests
+//			if (un_now.params.hold == 1) {
+//				allowMove = false;
+//				gripperMoveFinished = true;
+//			} else {// if (un_now.params.hold == 0) {
+//				allowMove = true;
+//				gripperMoveFinished = true;
+//			}
+//		}
 	}
   /* USER CODE END Callback 0 */
 //  if (htim->Instance == TIM4) {
