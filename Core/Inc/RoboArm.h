@@ -49,6 +49,9 @@ public:
 	GPIO_TypeDef *En3_GPIO_Port_M3;
 	uint16_t En3_Pin_M3;
 
+	GPIO_TypeDef *Buser_GPIO_Port_Ind;
+	uint16_t Buser_Pin_Ind;
+
 	uint32_t distPsteps = 0, anglePsteps = 0;
 	float gripperPsteps = 15600.0;
 	float distMax = 250.0;
@@ -89,6 +92,7 @@ public:
 	int SetGripper(int);				   // Set Gripper
 //	int GetLastPosition();			   // set last positions to encoder value
 	int Move2Motors(float, float); // move 2 mottors simultaneously
+	int SetBuserState(int State);
 //	int MoveLinear(float);
 //	int MoveAngle(float);
 	int MoveCorrectPosition(float angle, float distance);
@@ -120,7 +124,8 @@ public:
 					  GPIO_TypeDef *Dir3_GPIO_Port_M3T, uint16_t Dir3_Pin_M3T,
 					  GPIO_TypeDef *En1_GPIO_Port_M1T, uint16_t En1_Pin_M1T,
 					  GPIO_TypeDef *En2_GPIO_Port_M2T, uint16_t En2_Pin_M2T,
-					  GPIO_TypeDef *En3_GPIO_Port_M3T, uint16_t En3_Pin_M3T);
+					  GPIO_TypeDef *En3_GPIO_Port_M3T, uint16_t En3_Pin_M3T,
+					  GPIO_TypeDef *Buser_GPIO_Port_IndT, uint16_t Buser_Pin_IndT);
 	//			UART_HandleTypeDef &huart_tmcT);
 
 	int SetMicrosteps4All(uint8_t);

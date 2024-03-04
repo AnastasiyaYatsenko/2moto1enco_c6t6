@@ -296,10 +296,10 @@ int RoboArm::Move2Motors(float angle, float distance) {
 //	}
 	if (lastPosLinear < distance) {
 //			HAL_GPIO_WritePin(Dir2_GPIO_Port_M2, Dir2_Pin_M2, GPIO_PIN_SET);
-			tmcd_linear.disableInverseMotorDirection();
+			tmcd_linear.enableInverseMotorDirection();
 		} else if (lastPosLinear > distance) {
 //			HAL_GPIO_WritePin(Dir2_GPIO_Port_M2, Dir2_Pin_M2, GPIO_PIN_RESET);
-			tmcd_linear.enableInverseMotorDirection();
+			tmcd_linear.disableInverseMotorDirection();
 		}
 
 //	actualPosAngle = abs(lastPosAngle - angle);
@@ -393,6 +393,23 @@ int RoboArm::Move2Motors(float angle, float distance) {
 	HAL_TIM_Base_Start_IT(htim2M2);
 
 	return 0;
+}
+
+int RoboArm::SetBuserState(int State){
+    //State 1......9
+    if (State > 0 && State < 10)
+    {
+        for (int t = 0; t <= State; t++)
+        {
+            for (int i = 0; i <= 200; i++)
+            {
+                HAL_GPIO_TogglePin(Buser_GPIO_Port_Ind, Buser_Pin_Ind);
+                HAL_Delay(1);
+            }
+            HAL_Delay(100);
+        }
+    }
+    return 0;
 }
 
 //int MoveLinear(float Dist) {
@@ -730,7 +747,8 @@ int RoboArm::SetSettMotors(UART_HandleTypeDef &huartTmc,TIM_HandleTypeDef &htim1
 		GPIO_TypeDef *Dir3_GPIO_Port_M3T, uint16_t Dir3_Pin_M3T,
 		GPIO_TypeDef *En1_GPIO_Port_M1T, uint16_t En1_Pin_M1T,
 		GPIO_TypeDef *En2_GPIO_Port_M2T, uint16_t En2_Pin_M2T,
-		GPIO_TypeDef *En3_GPIO_Port_M3T, uint16_t En3_Pin_M3T){
+		GPIO_TypeDef *En3_GPIO_Port_M3T, uint16_t En3_Pin_M3T,
+		GPIO_TypeDef *Buser_GPIO_Port_IndT, uint16_t Buser_Pin_IndT){
 //		UART_HandleTypeDef &huart_tmcT) {
 	htim1M1 = &htim1;
 	htim2M2 = &htim2;
@@ -749,6 +767,11 @@ int RoboArm::SetSettMotors(UART_HandleTypeDef &huartTmc,TIM_HandleTypeDef &htim1
 	En2_Pin_M2 = En2_Pin_M2T;
 	En3_GPIO_Port_M3 = En3_GPIO_Port_M3T;
 	En3_Pin_M3 = En3_Pin_M3T;
+
+	En3_GPIO_Port_M3 = En3_GPIO_Port_M3T;
+	En3_Pin_M3 = En3_Pin_M3T;
+	Buser_GPIO_Port_Ind = Buser_GPIO_Port_IndT;
+	Buser_Pin_Ind = Buser_Pin_IndT;
 
 	SetEnable(1, true);
 	SetEnable(2, true);

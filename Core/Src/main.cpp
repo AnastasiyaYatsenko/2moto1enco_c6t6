@@ -162,7 +162,8 @@ int main(void)
 
   arm.SetSettMotors(huart2,htim1, htim2, htim3, Dir1_GPIO_Port, Dir1_Pin,
 		  Dir2_GPIO_Port, Dir2_Pin, Dir3_GPIO_Port, Dir3_Pin, En1_GPIO_Port,
-		  En1_Pin, En2_GPIO_Port, En2_Pin, En3_GPIO_Port, En3_Pin);
+		  En1_Pin, En2_GPIO_Port, En2_Pin, En3_GPIO_Port, En3_Pin,
+		  Buser_GPIO_Port, Buser_Pin);
 
   arm.SetSettEncoders(hspi1, CS1_GPIO_Port, CS1_Pin, CS2_GPIO_Port, CS2_Pin,
 		  14);
@@ -175,11 +176,24 @@ int main(void)
   HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
   arm.setPrintState(true);
 
+  arm.SetBuserState(8);
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  HAL_GPIO_TogglePin(Led1_GPIO_Port, Led1_Pin);
+
+	  if (error_flag) {
+		  for (int i = 0; i <= 200; i++) {
+			  HAL_GPIO_TogglePin(Buser_GPIO_Port, Buser_Pin);
+			  HAL_Delay(1);
+	      }
+	  }
+
+	  HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+
 	  if (startFirstMove) {
 		  startFirstMove = false;
 
@@ -271,6 +285,7 @@ int main(void)
 		  float lin = arm.GetLin();
 		  un_send.params.lin = lin;
 //		  un_send.params.lin = arm.ShiftZeroLin(lin);
+		  HAL_Delay(1);
 
 		  float ang = arm.GetAng();
 		  un_send.params.ang = ang;
@@ -354,7 +369,8 @@ void SystemClock_Config(void)
 
 /**
   * @brief SPI1 Initialization Function
-  * @param None
+  * @param None HAL_Delay(1);
+	      }
   * @retval None
   */
 static void MX_SPI1_Init(void)
@@ -569,7 +585,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 9600;
+  huart1.Init.BaudRate = 115200;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -754,6 +770,33 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	  } else {
 	      __NOP();
 	  }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART1)
+    {
+        if (huart->ErrorCode == HAL_UART_ERROR_ORE)
+        {
+            // переполнение
+            arm.SetBuserState(2);
+        }
+        if (huart->ErrorCode == HAL_UART_ERROR_PE)
+        {
+            // Ошибка четности
+        	arm.SetBuserState(3);
+        }
+        if (huart->ErrorCode == HAL_UART_ERROR_NE)
+        {
+            // Ошибка зашумление
+        	arm.SetBuserState(4);
+        }
+        if (huart->ErrorCode == HAL_UART_ERROR_FE)
+        {
+            // Ошибка кадрирования
+        	arm.SetBuserState(5);
+        }
+    }
 }
 
 /* USER CODE END 4 */

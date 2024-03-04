@@ -28,6 +28,7 @@ extern "C" {
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
@@ -48,6 +49,8 @@ extern "C" {
 
 
 #define FREQ 72000000
+
+#define error_flag false
 
 /* USER CODE END EC */
 
