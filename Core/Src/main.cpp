@@ -192,17 +192,21 @@ int main(void)
 	      }
 	  }
 
-	  HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+//	  HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
 
+	  //початок руху
 	  if (startFirstMove) {
 		  startFirstMove = false;
 
+		  //якщо зачеп зачеплений, перед початком руху його відпустити
 		  if (un_now.params.hold != 0){
-			  allowMove = false;
+			  allowMove = false; //= зачеп зачеплений
 			  un_now.params.hold = 0;
 			  arm.SetGripper(0);
 		  }
+		  //поки не відпустили зачеп повністю, чекаємо
 		  while (!allowMove) {}
+		  //починаємо рух
 		  if (allowMove) {
 			  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
 		  }
@@ -256,6 +260,7 @@ int main(void)
 //		  }
 //	  }
 
+	  //обидва мотори доїхали
 	  if (timerFT1 && timerFT2) {
 		  timerFT1 = false;
 		  timerFT2 = false;
@@ -268,7 +273,9 @@ int main(void)
 			  un_now.params.hold = un_to.params.hold;
 			  arm.SetGripper(un_to.params.hold);
 		  }
+		  //поки зачеп не доїхав у 0 чи 1, чекаємо
 		  while (!gripperMoveFinished) {}
+		  //зачеп доїхав - відправляємо до малини "все ок"
 		  if (gripperMoveFinished) {
 			  un_send.params.lin = 0;
 			  un_send.params.ang = 0;
@@ -279,17 +286,18 @@ int main(void)
 
 	  }
 
+	  //запит на читання координат
 	  if (arm.getPrintState() && sendDataFlag) {
 		  sendDataFlag = false;
 
 		  float lin = arm.GetLin();
 		  un_send.params.lin = lin;
-//		  un_send.params.lin = arm.ShiftZeroLin(lin);
+//		  un_send.params.lin = arm.ShiftZeroLin(lin); //це для АМТ223С-V
 		  HAL_Delay(1);
 
 		  float ang = arm.GetAng();
 		  un_send.params.ang = ang;
-//		  un_send.params.ang = arm.ShiftZeroAng(ang);
+//		  un_send.params.ang = arm.ShiftZeroAng(ang); //це для АМТ223С-V
 
 		  un_send.params.hold = un_now.params.hold;
 
@@ -298,9 +306,12 @@ int main(void)
 
 	  }
 
+	  //екстренна зупинка
 	  if (stopHand) {
 		  stopHand = false;
 		  arm.EmergencyStop();
+
+		  //відправляємо "все ок" до малини
 		  un_send.params.lin = 0;
 		  un_send.params.ang = 0;
 		  un_send.params.hold = 10;
@@ -308,10 +319,13 @@ int main(void)
 				  12);
 	  }
 
+	  //встановлення нуля
 	  if (setZeroFlag) {
 		  setZeroFlag = false;
 		  arm.SetZeroEncoders();
 //		  arm.SetSoftwareZero();
+
+		  //відправляємо "все ок" до малини
 		  un_send.params.lin = 0;
 		  un_send.params.ang = 0;
 		  un_send.params.hold = 10;
@@ -716,14 +730,12 @@ static void MX_GPIO_Init(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	//UNUSED(huart);
 	if (huart == &huart1) {
-//		if(!strcmp(rx_buffer,"TEXT")) {
-//		}
-
-//		uint8_t data[] = { '\\', 0x8f, 0xf8, 'B', 'q', '}', 0x16, 'C', 1, 1, 0, 0 };
+		// копіюємо отримані дані у rx_buffer
 		memcpy(un_get.bytes, rx_buffer, sizeof(rx_buffer));
 		switch (un_get.params.hold) {
 		case 0:
 		case 1:
+			// 0 або 1 у un_get.params.hold = прийшли нові координати
 			startFirstMove = true;
 			un_to.params.lin = un_get.params.lin;
 			un_to.params.ang = un_get.params.ang;
@@ -731,12 +743,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 //			arm.moveGripper = un_get.params.hold;
 			break;
 		case 25:
+			//25 = екстренна зупинка
 			stopHand = true;
 			break;
 		case 50:
+			//50 = get-запит
 			sendDataFlag = true;
 			break;
 		case 75:
+			//75 = встановлення нуля
 			setZeroFlag = true;
 			break;
 		}
@@ -748,23 +763,28 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == EndCap1_Pin) {
-	    //gripper is fully opened, no move allowed
+		//зачеп відкритий/зачеплений, їхати не можна
 		allowMove = false;
 		gripperMoveFinished = true;
 
+		//зупиняємо ШІМ на третьому таймері
 		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 		HAL_TIM_Base_Stop_IT(&htim3);
 	  } else if (GPIO_Pin == EndCap2_Pin) {
-		//gripper is fully closed, move allowed
+		//зачеп закритий/відчеплений, можна їхати
 		allowMove = true;
 		gripperMoveFinished = true;
+		//зупиняємо ШІМ на третьому таймері
 		HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 		HAL_TIM_Base_Stop_IT(&htim3);
 	  } else if (GPIO_Pin == EndCap3_Pin || GPIO_Pin == EndCap4_Pin) {
-		  //linear motor is on the end of the hand, stop move
+		  //лінійний мотор утикнувся в край руки, зупиняємо його рух
+		  //зупиняємо ШІМ на другому таймері
 		  HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 		  HAL_TIM_Base_Stop_IT(&htim2);
+		  //зануляємо лічильник імпульсів
 		  cntImpulse2 = 0;
+		  //вважаємо, що мотор доїхав до необхідної позиції
 		  arm.stateMoveM2 = false;
 		  timerFT2 = true;
 	  } else {
@@ -824,7 +844,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			cntImpulse1 = 0;
 			arm.stateMoveM1 = false;
 			timerFT1 = true;
-			if (startCorrectPos) {posCorrected = true;}
+
+			//перевірка: якщо була докатка, виставляємо, що ми її відпрацювали
+			//if (startCorrectPos) {posCorrected = true;}
 		}
 
 	} else if (htim->Instance == TIM2) {
@@ -837,9 +859,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			cntImpulse2 = 0;
 			arm.stateMoveM2 = false;
 			timerFT2 = true;
-			if (startCorrectPos) {posCorrected = true;}
+
+			//перевірка: якщо була докатка, виставляємо, що ми її відпрацювали
+			//if (startCorrectPos) {posCorrected = true;}
 		}
 	} else if (htim->Instance == TIM3) {
+		//закоментований код був для роботи зачепа по таймерах: пройшов N імпульсів і зупинився
+
 //		cntImpulse3++;
 //		if (cntImpulse3 >= arm.gripperPsteps) {
 //			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
@@ -896,6 +922,16 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
+	//повинен пропищати при помилці; треба перевірити
+	for (int t = 0; t <= 4; t++)
+	{
+		for (int i = 0; i <= 200; i++)
+		{
+			HAL_GPIO_TogglePin(Buser_GPIO_Port, Buser_Pin);
+			HAL_Delay(1);
+		}
+		HAL_Delay(100);
+	}
 	__disable_irq();
 	while (1) {
 	}
