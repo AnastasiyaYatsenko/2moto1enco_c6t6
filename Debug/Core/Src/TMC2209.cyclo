@@ -2,7 +2,9 @@
 ../Core/Src/TMC2209.cpp:15:6:void TMC2209::setup(UART_HandleTypeDef*, long int, TMC2209::SerialAddress)	1
 ../Core/Src/TMC2209.cpp:29:6:void TMC2209::enable()	2
 ../Core/Src/TMC2209.cpp:40:6:void TMC2209::disable()	2
+../Core/Src/TMC2209.cpp:51:10:uint16_t TMC2209::constrain(uint16_t, uint16_t, uint16_t)	3
 ../Core/Src/TMC2209.cpp:73:6:void TMC2209::setMicrostepsPerStepPowerOfTwo(uint8_t)	9
+../Core/Src/TMC2209.cpp:116:6:void TMC2209::setRunCurrent(uint8_t)	1
 ../Core/Src/TMC2209.cpp:148:6:void TMC2209::enableInverseMotorDirection()	1
 ../Core/Src/TMC2209.cpp:153:6:void TMC2209::disableInverseMotorDirection()	1
 ../Core/Src/TMC2209.cpp:476:6:void TMC2209::initialize(long int, TMC2209::SerialAddress)	1
@@ -10,7 +12,10 @@
 ../Core/Src/TMC2209.cpp:573:6:void TMC2209::setRegistersToDefaults()	1
 ../Core/Src/TMC2209.cpp:620:10:uint32_t TMC2209::reverseData(uint32_t)	2
 ../Core/Src/TMC2209.cpp:708:6:void TMC2209::write(uint8_t, uint32_t)	1
+../Core/Src/TMC2209.cpp:745:9:uint8_t TMC2209::percentToCurrentSetting(uint8_t)	1
+../Core/Src/TMC2209.cpp:758:9:uint8_t TMC2209::map(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)	1
 ../Core/Src/TMC2209.cpp:773:6:void TMC2209::writeStoredGlobalConfig()	1
+../Core/Src/TMC2209.cpp:781:6:void TMC2209::writeStoredDriverCurrent()	3
 ../Core/Src/TMC2209.cpp:793:6:void TMC2209::writeStoredChopperConfig()	1
 ../Core/Src/TMC2209.cpp:633:9:uint8_t TMC2209::calculateCrc(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	4
 ../Core/Src/TMC2209.cpp:652:6:void TMC2209::sendDatagramUnidirectional(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	1

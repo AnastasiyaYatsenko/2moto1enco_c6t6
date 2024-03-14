@@ -25,4 +25,4 @@
 ../Core/Src/RoboArm.cpp:730:7:float RoboArm::ShiftZeroAng(float)	2
 ../Core/Src/RoboArm.cpp:737:7:float RoboArm::ShiftZeroLin(float)	2
 ../Core/Src/RoboArm.cpp:744:5:int RoboArm::SetSettMotors(UART_HandleTypeDef&, TIM_HandleTypeDef&, TIM_HandleTypeDef&, TIM_HandleTypeDef&, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
-../Core/Src/RoboArm.cpp:810:5:int RoboArm::SetEnable(uint16_t, bool)	5
+../Core/Src/RoboArm.cpp:811:5:int RoboArm::SetEnable(uint16_t, bool)	5

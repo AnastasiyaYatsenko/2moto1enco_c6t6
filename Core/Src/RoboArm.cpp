@@ -797,6 +797,7 @@ int RoboArm::SetSettMotors(UART_HandleTypeDef &huartTmc,TIM_HandleTypeDef &htim1
 //	tmcd_linear.disableAutomaticGradientAdaptation();
 
 	SetMicrosteps4All(7);
+//	SetMicrosteps4All(4);
 
 
 

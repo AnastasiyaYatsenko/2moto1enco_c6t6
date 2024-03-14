@@ -1,16 +1,16 @@
-../Core/Src/main.cpp:129:5:int main()	80	static
-../Core/Src/main.cpp:345:6:void SystemClock_Config()	72	static
-../Core/Src/main.cpp:390:13:void MX_SPI1_Init()	8	static
-../Core/Src/main.cpp:428:13:void MX_TIM1_Init()	80	static
-../Core/Src/main.cpp:493:13:void MX_TIM2_Init()	48	static
-../Core/Src/main.cpp:542:13:void MX_TIM3_Init()	48	static
-../Core/Src/main.cpp:591:13:void MX_USART1_UART_Init()	8	static
-../Core/Src/main.cpp:624:13:void MX_USART2_UART_Init()	8	static
-../Core/Src/main.cpp:657:13:void MX_GPIO_Init()	40	static
-../Core/Src/main.cpp:730:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:764:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static,ignoring_inline_asm
-../Core/Src/main.cpp:795:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:832:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:921:6:void Error_Handler()	16	static,ignoring_inline_asm
-../Core/Src/main.cpp:939:1:void __static_initialization_and_destruction_0(int, int)	16	static
-../Core/Src/main.cpp:939:1:cpp)	8	static
+../Core/Src/main.cpp:136:5:int main()	80	static
+../Core/Src/main.cpp:382:6:void SystemClock_Config()	72	static
+../Core/Src/main.cpp:427:13:void MX_SPI1_Init()	8	static
+../Core/Src/main.cpp:465:13:void MX_TIM1_Init()	80	static
+../Core/Src/main.cpp:530:13:void MX_TIM2_Init()	48	static
+../Core/Src/main.cpp:579:13:void MX_TIM3_Init()	48	static
+../Core/Src/main.cpp:628:13:void MX_USART1_UART_Init()	8	static
+../Core/Src/main.cpp:661:13:void MX_USART2_UART_Init()	8	static
+../Core/Src/main.cpp:694:13:void MX_GPIO_Init()	40	static
+../Core/Src/main.cpp:767:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:804:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static,ignoring_inline_asm
+../Core/Src/main.cpp:835:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:872:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:961:6:void Error_Handler()	16	static,ignoring_inline_asm
+../Core/Src/main.cpp:979:1:void __static_initialization_and_destruction_0(int, int)	16	static
+../Core/Src/main.cpp:979:1:cpp)	8	static

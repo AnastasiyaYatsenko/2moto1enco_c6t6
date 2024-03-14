@@ -48,15 +48,15 @@ void TMC2209::disable() {
 	writeStoredChopperConfig();
 }
 //
-//uint16_t TMC2209::constrain(uint16_t x, uint16_t y, uint16_t z) {
-//	if (x < y) {
-//		return y;
-//	} else if (x > z) {
-//		return z;
-//	} else {
-//		return x;
-//	}
-//}
+uint16_t TMC2209::constrain(uint16_t x, uint16_t y, uint16_t z) {
+	if (x < y) {
+		return y;
+	} else if (x > z) {
+		return z;
+	} else {
+		return x;
+	}
+}
 //
 //void TMC2209::setMicrostepsPerStep(uint16_t microsteps_per_step) {
 //	uint16_t microsteps_per_step_shifted = constrain(microsteps_per_step,
@@ -113,11 +113,11 @@ void TMC2209::setMicrostepsPerStepPowerOfTwo(uint8_t exponent) {
 	writeStoredChopperConfig();
 }
 
-//void TMC2209::setRunCurrent(uint8_t percent) {
-//	uint8_t run_current = percentToCurrentSetting(percent);
-//	driver_current_.irun = run_current;
-//	writeStoredDriverCurrent();
-//}
+void TMC2209::setRunCurrent(uint8_t percent) {
+	uint8_t run_current = percentToCurrentSetting(percent);
+	driver_current_.irun = run_current;
+	writeStoredDriverCurrent();
+}
 //
 //void TMC2209::setHoldCurrent(uint8_t percent) {
 //	uint8_t hold_current = percentToCurrentSetting(percent);
@@ -480,7 +480,7 @@ void TMC2209::initialize(long serial_baud_rate, SerialAddress serial_address) {
 	setRegistersToDefaults();
 
 	//minimizeMotorCurrent();
-//	setRunCurrent(100);
+	setRunCurrent(80);
 //	disable();
 //	disableAutomaticCurrentScaling();
 //	disableAutomaticGradientAdaptation();
@@ -742,12 +742,12 @@ void TMC2209::write(uint8_t register_address, uint32_t data) {
 //	return reverseData(read_reply_datagram.data);
 //}
 //
-//uint8_t TMC2209::percentToCurrentSetting(uint8_t percent) {
-//	uint8_t constrained_percent = constrain(percent, PERCENT_MIN, PERCENT_MAX);
-//	uint8_t current_setting = map(constrained_percent, PERCENT_MIN, PERCENT_MAX,
-//			CURRENT_SETTING_MIN, CURRENT_SETTING_MAX);
-//	return current_setting;
-//}
+uint8_t TMC2209::percentToCurrentSetting(uint8_t percent) {
+	uint8_t constrained_percent = constrain(percent, PERCENT_MIN, PERCENT_MAX);
+	uint8_t current_setting = map(constrained_percent, PERCENT_MIN, PERCENT_MAX,
+			CURRENT_SETTING_MIN, CURRENT_SETTING_MAX);
+	return current_setting;
+}
 //
 //uint8_t TMC2209::currentSettingToPercent(uint8_t current_setting) {
 //	uint8_t percent = map(current_setting, CURRENT_SETTING_MIN,
@@ -755,9 +755,9 @@ void TMC2209::write(uint8_t register_address, uint32_t data) {
 //	return percent;
 //}
 //
-//uint8_t TMC2209::map(uint8_t x, uint8_t in_min,  uint8_t in_max, uint8_t out_min, uint8_t out_max){
-//	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-//}
+uint8_t TMC2209::map(uint8_t x, uint8_t in_min,  uint8_t in_max, uint8_t out_min, uint8_t out_max){
+	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
 //
 //uint8_t TMC2209::percentToHoldDelaySetting(uint8_t percent) {
 //	uint8_t constrained_percent = constrain(percent, PERCENT_MIN, PERCENT_MAX);
@@ -778,17 +778,17 @@ void TMC2209::writeStoredGlobalConfig() {
 //	return read(ADDRESS_GCONF);
 //}
 //
-//void TMC2209::writeStoredDriverCurrent() {
-//
-//	if (driver_current_.irun >= SEIMIN_UPPER_CURRENT_LIMIT) {
-//		cool_config_.seimin = SEIMIN_UPPER_SETTING;
-//	} else {
-//		cool_config_.seimin = SEIMIN_LOWER_SETTING;
-//	}
-//	if (cool_step_enabled_) {
-//		write(ADDRESS_COOLCONF, cool_config_.bytes);
-//	}
-//}
+void TMC2209::writeStoredDriverCurrent() {
+
+	if (driver_current_.irun >= SEIMIN_UPPER_CURRENT_LIMIT) {
+		cool_config_.seimin = SEIMIN_UPPER_SETTING;
+	} else {
+		cool_config_.seimin = SEIMIN_LOWER_SETTING;
+	}
+	if (cool_step_enabled_) {
+		write(ADDRESS_COOLCONF, cool_config_.bytes);
+	}
+}
 //
 void TMC2209::writeStoredChopperConfig() {
 	write(ADDRESS_CHOPCONF, chopper_config_.bytes);

@@ -72,6 +72,13 @@ bool timerFT2 = false;
 bool startCorrectPos = false;
 bool posCorrected = false;
 
+bool allowMove = true;
+bool gripperMoveFinished = true;
+bool startMove = false;
+bool moveFinished = false;
+
+bool getVersion = false;
+
 float accuracy = 0.05;
 
 float recAngleF = 0.0;
@@ -115,9 +122,9 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN 0 */
 
 uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0, step2 = 0;
-bool allowMove = true, gripperMoveFinished = true;
 
-RoboArm arm(0, 124);
+int version = 5;
+RoboArm arm(240, 124);
 //RoboArm arm(0, 124);
 
 /* USER CODE END 0 */
@@ -176,7 +183,8 @@ int main(void)
   HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
   arm.setPrintState(true);
 
-  arm.SetBuserState(8);
+  //arm.SetBuserState(8);
+  arm.SetBuserState(4);
 
   while (1)
   {
@@ -197,19 +205,27 @@ int main(void)
 	  //початок руху
 	  if (startFirstMove) {
 		  startFirstMove = false;
+		  startMove = true;
+		  allowMove = true;
 
 		  //якщо зачеп зачеплений, перед початком руху його відпустити
 		  if (un_now.params.hold != 0){
 			  allowMove = false; //= зачеп зачеплений
+//			  unholdBeforeMove = true;
 			  un_now.params.hold = 0;
 			  arm.SetGripper(0);
 		  }
 		  //поки не відпустили зачеп повністю, чекаємо
-		  while (!allowMove) {}
+//		  while (!allowMove) {}
 		  //починаємо рух
-		  if (allowMove) {
-			  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
-		  }
+//		  if (allowMove && unholdBeforeMove) {
+//			  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
+//		  }
+	  }
+
+	  if (allowMove && startMove) {
+		  arm.Move2Motors(un_to.params.ang, un_to.params.lin);
+		  startMove = false;
 	  }
 
 	  //з докаткою
@@ -266,6 +282,7 @@ int main(void)
 		  timerFT2 = false;
 		  un_now.params.lin = un_to.params.lin;
 		  un_now.params.ang = un_to.params.ang;
+		  moveFinished = true;
 
 		  //виставляємо зачеп у потрібну позицію
 		  if (un_now.params.hold != un_to.params.hold) {
@@ -274,16 +291,27 @@ int main(void)
 			  arm.SetGripper(un_to.params.hold);
 		  }
 		  //поки зачеп не доїхав у 0 чи 1, чекаємо
-		  while (!gripperMoveFinished) {}
+//		  while (!gripperMoveFinished) {}
 		  //зачеп доїхав - відправляємо до малини "все ок"
-		  if (gripperMoveFinished) {
-			  un_send.params.lin = 0;
-			  un_send.params.ang = 0;
-			  un_send.params.hold = 10;
-			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					  12);
-		  }
+//		  if (gripperMoveFinished) {
+//			  un_send.params.lin = 0;
+//			  un_send.params.ang = 0;
+//			  un_send.params.hold = 10;
+//			  gripperMoveFinished = false;
+//			  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+//					  12);
+//		  }
 
+	  }
+
+	  if (gripperMoveFinished && moveFinished) {
+		  un_send.params.lin = 0;
+		  un_send.params.ang = 0;
+		  un_send.params.hold = 10;
+		  gripperMoveFinished = false;
+		  moveFinished = false;
+		  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+				  12);
 	  }
 
 	  //запит на читання координат
@@ -329,6 +357,15 @@ int main(void)
 		  un_send.params.lin = 0;
 		  un_send.params.ang = 0;
 		  un_send.params.hold = 10;
+		  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
+				  12);
+	  }
+
+	  if (getVersion){
+		  getVersion = false;
+		  un_send.params.lin = 0;
+		  un_send.params.ang = 0;
+		  un_send.params.hold = version;
 		  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
 				  12);
 	  }
@@ -753,6 +790,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 		case 75:
 			//75 = встановлення нуля
 			setZeroFlag = true;
+			break;
+		case 80:
+			getVersion = true;
 			break;
 		}
 		memset(rx_buffer, 0, sizeof(rx_buffer));

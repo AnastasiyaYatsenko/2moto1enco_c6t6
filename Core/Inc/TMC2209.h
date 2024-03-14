@@ -40,7 +40,7 @@ public:
 	void setMicrostepsPerStepPowerOfTwo(uint8_t exponent);
 
 	// range 0-100
-//	void setRunCurrent(uint8_t percent);
+	void setRunCurrent(uint8_t percent);
 	// range 0-100
 //	void setHoldCurrent(uint8_t percent);
 	// range 0-100
@@ -111,8 +111,8 @@ public:
 //
 //	void useExternalSenseResistors();
 //	void useInternalSenseResistors();
-//	uint16_t constrain(uint16_t,uint16_t,uint16_t);
-//	uint8_t map(uint8_t,uint8_t, uint8_t, uint8_t,uint8_t);
+	uint16_t constrain(uint16_t,uint16_t,uint16_t);
+	uint8_t map(uint8_t,uint8_t, uint8_t, uint8_t,uint8_t);
 //	// bidirectional methods
 //	uint8_t getVersion();
 //
@@ -503,7 +503,7 @@ private:
 	void write(uint8_t register_address, uint32_t data);
 //	uint32_t read(uint8_t register_address);
 
-//	uint8_t percentToCurrentSetting(uint8_t percent);
+	uint8_t percentToCurrentSetting(uint8_t percent);
 //	uint8_t currentSettingToPercent(uint8_t current_setting);
 //	uint8_t percentToHoldDelaySetting(uint8_t percent);
 //	uint8_t holdDelaySettingToPercent(uint8_t hold_delay_setting);
@@ -513,7 +513,7 @@ private:
 
 	void writeStoredGlobalConfig();
 //	uint32_t readGlobalConfigBytes();
-//	void writeStoredDriverCurrent();
+	void writeStoredDriverCurrent();
 	void writeStoredChopperConfig();
 //	uint32_t readChopperConfigBytes();
 //	void writeStoredPwmConfig();
