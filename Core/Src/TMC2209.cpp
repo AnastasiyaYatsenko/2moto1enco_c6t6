@@ -480,7 +480,7 @@ void TMC2209::initialize(long serial_baud_rate, SerialAddress serial_address) {
 	setRegistersToDefaults();
 
 	//minimizeMotorCurrent();
-	setRunCurrent(80);
+	setRunCurrent(70);
 //	disable();
 //	disableAutomaticCurrentScaling();
 //	disableAutomaticGradientAdaptation();
@@ -779,6 +779,7 @@ void TMC2209::writeStoredGlobalConfig() {
 //}
 //
 void TMC2209::writeStoredDriverCurrent() {
+	write(ADDRESS_IHOLD_IRUN, driver_current_.bytes);
 
 	if (driver_current_.irun >= SEIMIN_UPPER_CURRENT_LIMIT) {
 		cool_config_.seimin = SEIMIN_UPPER_SETTING;

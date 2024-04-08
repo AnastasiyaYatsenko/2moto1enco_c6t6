@@ -16,6 +16,6 @@
 ../Core/Src/TMC2209.cpp:758:9:uint8_t TMC2209::map(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)	1
 ../Core/Src/TMC2209.cpp:773:6:void TMC2209::writeStoredGlobalConfig()	1
 ../Core/Src/TMC2209.cpp:781:6:void TMC2209::writeStoredDriverCurrent()	3
-../Core/Src/TMC2209.cpp:793:6:void TMC2209::writeStoredChopperConfig()	1
+../Core/Src/TMC2209.cpp:794:6:void TMC2209::writeStoredChopperConfig()	1
 ../Core/Src/TMC2209.cpp:633:9:uint8_t TMC2209::calculateCrc(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	4
 ../Core/Src/TMC2209.cpp:652:6:void TMC2209::sendDatagramUnidirectional(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	1

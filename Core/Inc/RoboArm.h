@@ -27,6 +27,7 @@
 class RoboArm{
 public:
 	float linearStepsMil = motorStep * drvMicroSteps / (beltRatio * spoolStep);
+	int steps4OneMM = 200 * 128 / (2 * 20);
 	// Settings for moto/rs
 	TIM_HandleTypeDef *htim1M1;
 	TIM_HandleTypeDef *htim2M2;

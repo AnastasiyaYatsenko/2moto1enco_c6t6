@@ -204,6 +204,8 @@ int main(void) {
 
 	arm.State = arm.ArmSTAND;
 
+//	debounce_check_pins_and_set_flag();
+
 	while (1) {
 		/* USER CODE END WHILE */
 
@@ -864,8 +866,14 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 void debounce_check_pins_and_set_flag() {
 	static uint32_t last_check_time = 0;
 	static uint32_t debounce_delay = 2; // Затримка для віднімання дребезгу, в мілісекундах, насправді дребезг всього 120 мікросекунд!!!!
-	static uint8_t last_EndCap1_state = GPIO_PIN_RESET;
-	static uint8_t last_EndCap2_state = GPIO_PIN_RESET;
+	static bool checkFlag1 = false;
+	static bool checkFlag2 = false;
+//	static uint8_t last_EndCap1_state = GPIO_PIN_RESET;
+//	static uint8_t last_EndCap2_state = GPIO_PIN_RESET;
+	static uint8_t last_EndCap1_state = HAL_GPIO_ReadPin(arm.EndCap1_GPIO_PortG,
+			arm.EndCap1_PinG);
+	static uint8_t last_EndCap2_state = HAL_GPIO_ReadPin(arm.EndCap2_GPIO_PortG,
+			arm.EndCap2_PinG);
 	uint32_t current_time = HAL_GetTick();
 
 	// Перевірка чи пройшла достатня затримка для уникнення дребезгу
@@ -879,18 +887,51 @@ void debounce_check_pins_and_set_flag() {
 
 		if (current_EndCap1_state == GPIO_PIN_SET
 				&& last_EndCap1_state == GPIO_PIN_RESET) {
-			gripIntFlag = true;
+			if (checkFlag1) {
+				checkFlag1 = false;
+				gripIntFlag = true;
+//				HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+				HAL_GPIO_TogglePin(arm.Buser_GPIO_Port_Ind, arm.Buser_Pin_Ind);
+			} else {
+				HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+				checkFlag1 = true;
+			}
+		} else {
+			if (checkFlag1) {
+				checkFlag1 = false;
+			}
 		}
-		last_EndCap1_state = current_EndCap1_state;
+		if (!checkFlag1) {
+			last_EndCap1_state = current_EndCap1_state;
+		}
 
 		// Перевірка стану піну EndCap2
 		uint8_t current_EndCap2_state = HAL_GPIO_ReadPin(arm.EndCap2_GPIO_PortG,
 				arm.EndCap2_PinG);
+//		if (current_EndCap2_state == GPIO_PIN_SET
+//				&& last_EndCap2_state == GPIO_PIN_RESET) {
+//			gripIntFlag = true;
+//		}
+//		last_EndCap2_state = current_EndCap2_state;
 		if (current_EndCap2_state == GPIO_PIN_SET
 				&& last_EndCap2_state == GPIO_PIN_RESET) {
-			gripIntFlag = true;
+			if (checkFlag2) {
+				checkFlag2 = false;
+				gripIntFlag = true;
+//				HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+				HAL_GPIO_TogglePin(arm.Buser_GPIO_Port_Ind, arm.Buser_Pin_Ind);
+			} else {
+				HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+				checkFlag2 = true;
+			}
+		}  else {
+			if (checkFlag2) {
+				checkFlag2 = false;
+			}
 		}
-		last_EndCap2_state = current_EndCap2_state;
+		if (!checkFlag2) {
+			last_EndCap2_state = current_EndCap2_state;
+		}
 	}
 }
 
@@ -939,6 +980,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 		cntImpulse3++;
 		if (cntImpulse3 >= arm.gripperPsteps || gripIntFlag == true) {
+			bool local_flag = gripIntFlag;
 			gripIntFlag = false;
 			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim3);

@@ -224,19 +224,19 @@ int RoboArm::MoveCorrectPosition(float angle, float distance) {
 
 int steps4OneMM = 200 * 128 / (2 * 20);
 
-float DistLast=0,DistLastT=0,DistNow=0;
+//float DistLast=0,DistLastT=0,DistNow=0;
 
 
-float distFenc(float encDt){
-
-    //0........16384
-
-    float angleEncoder = (encDt * 360.0 ) / 16384;  //кут енкодера
-    float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
-//    std::cout<<"== Поточна дистанція по енкодеру: "<<distPsteps/steps4OneMM<<" mm"<<std::endl; //поточна дистанція по енкодеру
-
-     return distPsteps/steps4OneMM;
- }
+//float distFenc(float encDt){
+//
+//    //0........16384
+//
+//    float angleEncoder = (encDt * 360.0 ) / 16384;  //кут енкодера
+//    float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
+////    std::cout<<"== Поточна дистанція по енкодеру: "<<distPsteps/steps4OneMM<<" mm"<<std::endl; //поточна дистанція по енкодеру
+//
+//     return distPsteps/steps4OneMM;
+// }
 
 int RoboArm::Move2Motors(float angle, float distance) {
 
@@ -667,18 +667,51 @@ float RoboArm::GetLin() {
 //	float pos_actual = GetLinEncoders(ang_pos);
 //	float pos = pos_actual + defaultDistanse;
 
-	float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
-	if (inverseLinZero){
-		angleEncoder = abs(360-angleEncoder);
+	float pos = -1.0;
+	float enc2mm = 16384.0/(2.0*20.0*33.0*33.0/(13.0*13.0)); //число одиниць енкодера на 1 мм лінійного руху
+
+	if (posnowT_2 <= 5000){
+		//the motor is somewhere between 48mm and 124mm
+//		posnowT_2 = posnowT_2 - 16384;
+//		float temp = float(posnowT_2) - 16384.0;
+		pos = defaultDistanse - float(posnowT_2)/enc2mm;
+
+//		float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
+//		if (inverseLinZero){
+//			angleEncoder = abs(360-angleEncoder);
+//		}
+//
+//		float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
+//
+////		pos = defaultDistanse - distPsteps/steps4OneMM;
+//		pos = distPsteps/steps4OneMM;
+	} else {//if (posnowT_2 <= 9000){ //приблизноб по факту десь +- 8963
+		pos = defaultDistanse + (16384.0 - float(posnowT_2)) / enc2mm;
+		// the motor is somewhere 124...end of the hand
+//		float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
+//		if (inverseLinZero){
+//			angleEncoder = abs(360-angleEncoder);
+//		}
+
+//		float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
+
+//		pos = -float(posnowT_2) / enc2mm + defaultDistanse;
+
+//		pos = distPsteps/steps4OneMM + defaultDistanse;
+//		pos = distPsteps/steps4OneMM;
 	}
 
-	float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
-//	std::cout<<"== Поточна дистанція по енкодеру: "<<distPsteps/steps4OneMM<<" mm"<<std::endl; //поточна дистанція по енкодеру
-
-	float pos = distPsteps/steps4OneMM + defaultDistanse;
-
-	if (pos > distMax)
-		pos -= distMax;
+//	float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
+//	if (inverseLinZero){
+//		angleEncoder = abs(360-angleEncoder);
+//	}
+//
+//	float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
+//
+//	float pos = distPsteps/steps4OneMM + defaultDistanse;
+//
+//	if (pos > distMax)
+//		pos -= distMax;
 
 	return pos;
 }
