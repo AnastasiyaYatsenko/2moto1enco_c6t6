@@ -199,8 +199,8 @@ int main(void) {
 	HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
 	arm.setPrintState(true);
 
-	//arm.SetBuserState(8);
-	arm.SetBuserState(4);
+	arm.SetBuserState(8);
+//	arm.SetBuserState(4);
 
 	arm.State = arm.ArmSTAND;
 
@@ -955,7 +955,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 			HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
 			HAL_TIM_Base_Stop_IT(&htim1);
-			arm.SetEnable(1, false);
+//			arm.SetEnable(1, false);
+			arm.SetEnable(1, true);
 			cntImpulse1 = 0;
 			timerFT1 = true;
 
@@ -969,7 +970,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		if (cntImpulse2 >= arm.distPsteps) {
 			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim2);
-			arm.SetEnable(2, false);
+//			arm.SetEnable(2, false);
+			arm.SetEnable(2, true);
 			cntImpulse2 = 0;
 			timerFT2 = true;
 
@@ -980,11 +982,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 
 		cntImpulse3++;
 		if (cntImpulse3 >= arm.gripperPsteps || gripIntFlag == true) {
-			bool local_flag = gripIntFlag;
+//			bool local_flag = gripIntFlag;
 			gripIntFlag = false;
 			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim3);
-			arm.SetEnable(3, false);
+//			arm.SetEnable(3, false);
+			arm.SetEnable(3, true);
 
 			if (arm.State == arm.ArmGripPreMOVE) {
 				arm.State = arm.ArmGripPreENDMOVE;

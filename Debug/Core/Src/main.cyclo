@@ -12,6 +12,6 @@
 ../Core/Src/main.cpp:845:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	6
 ../Core/Src/main.cpp:866:6:void debounce_check_pins_and_set_flag()	16
 ../Core/Src/main.cpp:948:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	10
-../Core/Src/main.cpp:1034:6:void Error_Handler()	3
-../Core/Src/main.cpp:1049:1:void __static_initialization_and_destruction_0(int, int)	3
-../Core/Src/main.cpp:1049:1:cpp)	1
+../Core/Src/main.cpp:1037:6:void Error_Handler()	3
+../Core/Src/main.cpp:1052:1:void __static_initialization_and_destruction_0(int, int)	3
+../Core/Src/main.cpp:1052:1:cpp)	1
