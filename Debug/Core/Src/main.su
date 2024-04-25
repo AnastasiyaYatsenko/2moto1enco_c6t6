@@ -1,17 +1,17 @@
-../Core/Src/main.cpp:148:5:int main()	88	static
-../Core/Src/main.cpp:394:6:void SystemClock_Config()	72	static
-../Core/Src/main.cpp:436:13:void MX_SPI1_Init()	8	static
-../Core/Src/main.cpp:472:13:void MX_TIM1_Init()	80	static
-../Core/Src/main.cpp:535:13:void MX_TIM2_Init()	48	static
-../Core/Src/main.cpp:582:13:void MX_TIM3_Init()	48	static
-../Core/Src/main.cpp:629:13:void MX_USART1_UART_Init()	8	static
-../Core/Src/main.cpp:660:13:void MX_USART2_UART_Init()	8	static
-../Core/Src/main.cpp:691:13:void MX_GPIO_Init()	40	static
-../Core/Src/main.cpp:763:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:808:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static
-../Core/Src/main.cpp:845:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:866:6:void debounce_check_pins_and_set_flag()	16	static
-../Core/Src/main.cpp:948:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:1037:6:void Error_Handler()	16	static,ignoring_inline_asm
-../Core/Src/main.cpp:1052:1:void __static_initialization_and_destruction_0(int, int)	16	static
-../Core/Src/main.cpp:1052:1:cpp)	8	static
+../Core/Src/main.cpp:152:5:int main()	88	static
+../Core/Src/main.cpp:432:6:void SystemClock_Config()	72	static
+../Core/Src/main.cpp:474:13:void MX_SPI1_Init()	8	static
+../Core/Src/main.cpp:510:13:void MX_TIM1_Init()	80	static
+../Core/Src/main.cpp:573:13:void MX_TIM2_Init()	48	static
+../Core/Src/main.cpp:620:13:void MX_TIM3_Init()	48	static
+../Core/Src/main.cpp:667:13:void MX_USART1_UART_Init()	8	static
+../Core/Src/main.cpp:698:13:void MX_USART2_UART_Init()	8	static
+../Core/Src/main.cpp:729:13:void MX_GPIO_Init()	40	static
+../Core/Src/main.cpp:801:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	24	static
+../Core/Src/main.cpp:868:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static
+../Core/Src/main.cpp:905:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:926:6:void debounce_check_pins_and_set_flag()	16	static
+../Core/Src/main.cpp:1008:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:1097:6:void Error_Handler()	16	static,ignoring_inline_asm
+../Core/Src/main.cpp:1112:1:void __static_initialization_and_destruction_0(int, int)	16	static
+../Core/Src/main.cpp:1112:1:cpp)	8	static

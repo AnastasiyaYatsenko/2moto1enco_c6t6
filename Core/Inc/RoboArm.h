@@ -99,6 +99,10 @@ public:
 
 	enum StateSystem{
 	ArmSTART, //перший рух
+	ArmStepSTART, //коли прийшли дані у вигляді кроків та періодів налаштували таймери
+	ArmStepWaitMOVE, //таймери налаштовані, чекаємо старту руху по крокам
+	ArmStepStartMOVE, //починаємо рух по крокам
+	ArmStepMOVE, // рух йде по крокам, із цього переходимо
 	ArmMOVE,  // зараз рух моторів
 	ArmSTAND,  //стоїть нічого не робить
 	ArmERROR,  // випав в помилку
@@ -126,6 +130,8 @@ public:
 	int GetGripperState();				//true - close / false - open
 //	int GetLastPosition();			   // set last positions to encoder value
 	int Move2Motors(float, float); // move 2 mottors simultaneously
+	int Set2StepMotors(float,int, float, int);
+	int Move2StepMotors(); //start timers
 	int SetBuserState(int State);
 //	int MoveLinear(float);
 //	int MoveAngle(float);
