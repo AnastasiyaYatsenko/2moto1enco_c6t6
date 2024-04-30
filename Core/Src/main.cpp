@@ -135,7 +135,7 @@ uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0,
 		step2 = 0;
 
 //TODO version naming
-int version = 11;
+int version = 14;
 RoboArm arm(240.0, 124.0);
 
 //RoboArm arm(0, 124); - перша рука
@@ -1016,7 +1016,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 			HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
 			HAL_TIM_Base_Stop_IT(&htim1);
 //			arm.SetEnable(1, false);
-			arm.SetEnable(1, true);
+			// COMMENT 10
+//			arm.SetEnable(1, true);
 			cntImpulse1 = 0;
 			timerFT1 = true;
 
@@ -1031,7 +1032,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim2);
 //			arm.SetEnable(2, false);
-			arm.SetEnable(2, true);
+			// COMMENT 11
+//			arm.SetEnable(2, true);
 			cntImpulse2 = 0;
 			timerFT2 = true;
 
@@ -1047,7 +1049,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim3);
 //			arm.SetEnable(3, false);
-			arm.SetEnable(3, true);
+			// COMMENT 12
+//			arm.SetEnable(3, true);
 
 			if (arm.State == arm.ArmGripPreMOVE) {
 				arm.State = arm.ArmGripPreENDMOVE;

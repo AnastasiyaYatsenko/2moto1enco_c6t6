@@ -40,8 +40,9 @@ int RoboArm::MoveCorrectPosition(float angle, float distance) {
 	HAL_TIM_Base_Stop_IT(htim1M1);			// остановили прерывание таймеров
 	HAL_TIM_Base_Stop_IT(htim2M2);
 
-	SetEnable(1, false);
-	SetEnable(2, false);
+	// COMMENT 2
+//	SetEnable(1, false);
+//	SetEnable(2, false);
 
 //	GetLastPosition(); //update -> lastPosAngle lastPosLinear from ENCODER
 	lastPosAngle_Enc = GetAng();
@@ -125,8 +126,9 @@ int RoboArm::MoveCorrectPosition(float angle, float distance) {
 	stateMoveM1 = true;
 	stateMoveM2 = true;
 
-	SetEnable(1, true);
-	SetEnable(2, true);
+	// COMMENT 3
+//	SetEnable(1, true);
+//	SetEnable(2, true);
 
 	HAL_TIM_PWM_Start(htim1M1, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(htim2M2, TIM_CHANNEL_2);
@@ -161,8 +163,9 @@ int RoboArm::Move2Motors(float angle, float distance) {
 	HAL_TIM_Base_Stop_IT(htim1M1);			// остановили прерывание таймеров
 	HAL_TIM_Base_Stop_IT(htim2M2);
 
-	SetEnable(1, false);
-	SetEnable(2, false);
+	// COMMENT 4
+//	SetEnable(1, false);
+//	SetEnable(2, false);
 
 //	GetLastPosition(); //update -> lastPosAngle lastPosLinear from ENCODER
 	lastPosAngle_Enc = GetAng();
@@ -251,8 +254,9 @@ int RoboArm::Move2Motors(float angle, float distance) {
 	stateMoveM1 = true;
 	stateMoveM2 = true;
 
-	SetEnable(1, true);
-	SetEnable(2, true);
+	// COMMENT 5
+//	SetEnable(1, true);
+//	SetEnable(2, true);
 
 	HAL_TIM_PWM_Start(htim1M1, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(htim2M2, TIM_CHANNEL_2);
@@ -282,8 +286,9 @@ int RoboArm::Set2StepMotors(float stepLinT, int periodLinT, float stepAngleT,
 	HAL_TIM_Base_Stop_IT (htim1M1);			// остановили прерывание таймеров
 	HAL_TIM_Base_Stop_IT (htim2M2);
 
-	SetEnable(1, false);
-	SetEnable(2, false);
+	//COMMENT 6
+//	SetEnable(1, false);
+//	SetEnable(2, false);
 
 	float tempAngDir = 0, tempLinDir = 0;
 	if (stepAngleT < 0) {
@@ -323,8 +328,9 @@ int RoboArm::Move2StepMotors(){
 	stateMoveM1 = true;
 	stateMoveM2 = true;
 
-	SetEnable(1, true);
-	SetEnable(2, true);
+	// COMMENT 7
+//	SetEnable(1, true);
+//	SetEnable(2, true);
 
 	HAL_TIM_PWM_Start(htim1M1, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(htim2M2, TIM_CHANNEL_2);
@@ -517,7 +523,8 @@ int RoboArm::SetGripper(int opcl) {
 	HAL_TIM_PWM_Stop(htim3M3, TIM_CHANNEL_2);
 	HAL_TIM_Base_Stop_IT(htim3M3);
 
-	SetEnable(3, false);
+	// COMMENT 8
+//	SetEnable(3, false);
 
 	//Зупинили все, 1 та 2й на утриманні
 	//Обираэмо напрям
@@ -534,7 +541,8 @@ int RoboArm::SetGripper(int opcl) {
 	htim3M3->Instance->ARR = periodM3;
 	htim3M3->Instance->CCR2 = periodM3 / 2;
 
-	SetEnable(3, true);
+	// COMMENT 9
+//	SetEnable(3, true);
 	HAL_TIM_PWM_Start(htim3M3, TIM_CHANNEL_2);
 	HAL_TIM_Base_Start_IT(htim3M3);
 	return 0;
@@ -805,26 +813,16 @@ int RoboArm::SetSettMotors(UART_HandleTypeDef &huartTmc,
 	tmcd_linear.setup(&huartTmc, 115200, tmcd_linear.SERIAL_ADDRESS_1);
 
 	tmcd_angle.enable();
-
-//	tmcd_angle.disableAutomaticCurrentScaling();
-//	tmcd_angle.disableAutomaticGradientAdaptation();
-
 	tmcd_gripper.enable();
-
-//	tmcd_gripper.disableAutomaticCurrentScaling();
-//	tmcd_gripper.disableAutomaticGradientAdaptation();
-
 	tmcd_linear.enable();
-
-//	tmcd_linear.disableAutomaticCurrentScaling();
-//	tmcd_linear.disableAutomaticGradientAdaptation();
 
 	SetMicrosteps4All(7);
 //	SetMicrosteps4All(4);
 
-	SetEnable(1, false);
-	SetEnable(2, false);
-	SetEnable(3, false);
+	// COMMENT 1
+//	SetEnable(1, false);
+//	SetEnable(2, false);
+//	SetEnable(3, false);
 
 	return 0;
 }

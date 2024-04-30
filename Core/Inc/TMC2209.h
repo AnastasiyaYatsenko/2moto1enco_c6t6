@@ -42,7 +42,7 @@ public:
 	// range 0-100
 	void setRunCurrent(uint8_t percent);
 	// range 0-100
-//	void setHoldCurrent(uint8_t percent);
+	void setHoldCurrent(uint8_t percent);
 	// range 0-100
 //	void setHoldDelay(uint8_t percent);
 	// range 0-100

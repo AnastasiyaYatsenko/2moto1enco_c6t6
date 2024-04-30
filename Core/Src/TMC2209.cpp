@@ -119,13 +119,13 @@ void TMC2209::setRunCurrent(uint8_t percent) {
 	writeStoredDriverCurrent();
 }
 //
-//void TMC2209::setHoldCurrent(uint8_t percent) {
-//	uint8_t hold_current = percentToCurrentSetting(percent);
-//
-//	driver_current_.ihold = hold_current;
-//	writeStoredDriverCurrent();
-//}
-//
+void TMC2209::setHoldCurrent(uint8_t percent) {
+	uint8_t hold_current = percentToCurrentSetting(percent);
+
+	driver_current_.ihold = hold_current;
+	writeStoredDriverCurrent();
+}
+
 //void TMC2209::setHoldDelay(uint8_t percent) {
 //	uint8_t hold_delay = percentToHoldDelaySetting(percent);
 //
@@ -481,6 +481,7 @@ void TMC2209::initialize(long serial_baud_rate, SerialAddress serial_address) {
 
 	//minimizeMotorCurrent();
 	setRunCurrent(70);
+	setHoldCurrent(20);
 //	disable();
 //	disableAutomaticCurrentScaling();
 //	disableAutomaticGradientAdaptation();
