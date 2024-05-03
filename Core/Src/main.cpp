@@ -136,7 +136,7 @@ uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0,
 
 //TODO version naming
 int version = 14;
-RoboArm arm(240.0, 124.0);
+RoboArm arm(0.0, 124.0);
 
 //RoboArm arm(0, 124); - перша рука
 //RoboArm arm(120, 124); - друга

@@ -7572,23 +7572,23 @@ __STATIC_FORCEINLINE void __disable_irq(void)
  80037cc:	6039      	str	r1, [r7, #0]
  80037ce:	687b      	ldr	r3, [r7, #4]
  80037d0:	2b01      	cmp	r3, #1
- 80037d2:	d109      	bne.n	80037e8 <_Z41__static_initialization_and_destruction_0ii+0x24>
+ 80037d2:	d10a      	bne.n	80037ea <_Z41__static_initialization_and_destruction_0ii+0x26>
  80037d4:	683b      	ldr	r3, [r7, #0]
  80037d6:	f64f 72ff 	movw	r2, #65535	; 0xffff
  80037da:	4293      	cmp	r3, r2
- 80037dc:	d104      	bne.n	80037e8 <_Z41__static_initialization_and_destruction_0ii+0x24>
-RoboArm arm(240.0, 124.0);
- 80037de:	4a04      	ldr	r2, [pc, #16]	; (80037f0 <_Z41__static_initialization_and_destruction_0ii+0x2c>)
- 80037e0:	4904      	ldr	r1, [pc, #16]	; (80037f4 <_Z41__static_initialization_and_destruction_0ii+0x30>)
- 80037e2:	4805      	ldr	r0, [pc, #20]	; (80037f8 <_Z41__static_initialization_and_destruction_0ii+0x34>)
- 80037e4:	f7fd fd9e 	bl	8001324 <_ZN7RoboArmC1Eff>
+ 80037dc:	d105      	bne.n	80037ea <_Z41__static_initialization_and_destruction_0ii+0x26>
+RoboArm arm(0.0, 124.0);
+ 80037de:	4a05      	ldr	r2, [pc, #20]	; (80037f4 <_Z41__static_initialization_and_destruction_0ii+0x30>)
+ 80037e0:	f04f 0100 	mov.w	r1, #0
+ 80037e4:	4804      	ldr	r0, [pc, #16]	; (80037f8 <_Z41__static_initialization_and_destruction_0ii+0x34>)
+ 80037e6:	f7fd fd9d 	bl	8001324 <_ZN7RoboArmC1Eff>
 }
- 80037e8:	bf00      	nop
- 80037ea:	3708      	adds	r7, #8
- 80037ec:	46bd      	mov	sp, r7
- 80037ee:	bd80      	pop	{r7, pc}
- 80037f0:	42f80000 	.word	0x42f80000
- 80037f4:	43700000 	.word	0x43700000
+ 80037ea:	bf00      	nop
+ 80037ec:	3708      	adds	r7, #8
+ 80037ee:	46bd      	mov	sp, r7
+ 80037f0:	bd80      	pop	{r7, pc}
+ 80037f2:	bf00      	nop
+ 80037f4:	42f80000 	.word	0x42f80000
  80037f8:	20000258 	.word	0x20000258
 
 080037fc <_GLOBAL__sub_I_hspi1>:
