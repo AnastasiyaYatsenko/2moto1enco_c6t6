@@ -58,8 +58,8 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 
 uint8_t rx_index = 0;
-uint8_t rx_data[20];
-uint8_t rx_buffer[20];
+uint8_t rx_data[28];
+uint8_t rx_buffer[28];
 uint8_t transfer_cplt = 0;
 //TODO сокріш за все треба прибрати вже непотрібні флаги але такого інструменту тут немає))
 //bool startFirstMove = false;
@@ -102,6 +102,8 @@ union UN {
 		float ang;
 		int PoT_lin;
 		int PoT_ang;
+		float lin_2;
+		float ang_2;
 		int hold;
 	} params;
 	uint8_t bytes[sizeof(params)];
@@ -135,8 +137,11 @@ uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0,
 		step2 = 0;
 
 //TODO version naming
-int version = 14;
-RoboArm arm(0.0, 124.0);
+
+//15 - додано щось
+
+int version = 15;
+RoboArm arm(240.0, 124.0);
 
 //RoboArm arm(0, 124); - перша рука
 //RoboArm arm(120, 124); - друга
@@ -206,7 +211,16 @@ int main(void) {
 	arm.SetBuserState(8);
 //	arm.SetBuserState(4);
 
+//В останне запишемо поточне положення зачепа
+	arm.lastGripState = arm.GetGripperState();
+
 	arm.State = arm.ArmSTAND;
+
+	for (int i=0; i<3; i++){
+		float lin = arm.GetLin();
+		HAL_Delay(10);
+		float ang = arm.GetAng();
+	}
 
 //	debounce_check_pins_and_set_flag();
 
@@ -233,11 +247,14 @@ int main(void) {
 		if (arm.State == arm.ArmSTART) {
 			arm.State = arm.ArmSTAND;
 			//перевіряємо статус зацепа якщо він зачеплений то ОПУСКАЄМО (це не вірна логіка)
-			//+1.2
+			//+1
 			int tempGripState = arm.GetGripperState();
+			//Зберігли попередній стан
+
 			if (tempGripState == 1 && un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
 //			if (un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
 				arm.State = arm.ArmGripPreMOVE;
+				arm.lastGripState = tempGripState; //записали поточне положеня
 				arm.SetGripper(0);
 			} else { //if (tempGripState == 0) { //якщо опущенний то можна далі рухатись
 				//+3
@@ -250,7 +267,7 @@ int main(void) {
 			arm.State = arm.ArmSTAND;
 			arm.Set2StepMotors(un_to.params.lin, un_to.params.PoT_lin,
 					un_to.params.ang, un_to.params.PoT_ang);
-			arm.State=arm.ArmStepWaitMOVE;
+			arm.State = arm.ArmStepWaitMOVE;
 		}
 
 		if (arm.State == arm.ArmStepWaitMOVE) {
@@ -260,13 +277,29 @@ int main(void) {
 			un_send.params.ang = 0.0;
 			un_send.params.PoT_lin = 0;
 			un_send.params.PoT_ang = 0;
+			un_send.params.lin_2 = 0;
+			un_send.params.ang_2 = 0;
 			un_send.params.hold = 10;
 			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-								12);
+					12);
 		}
 
 		if (arm.State == arm.ArmStepStartMOVE) {
 			arm.State = arm.ArmStepMOVE;
+			//В останне запишемо поточне положення зачепа
+			arm.lastGripState = arm.GetGripperState();
+
+//			int tempGripState = arm.GetGripperState();
+//
+//			if (tempGripState == 1 && un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
+//				arm.State = arm.ArmGripPreMOVEStep;
+//				arm.lastGripState = tempGripState; //записали поточне положеня
+//				arm.SetGripper(0);
+//			} else { //if (tempGripState == 0) { //якщо опущенний то можна далі рухатись
+//				//+3
+//				arm.State = arm.ArmGripPreENDMOVEStep;
+//			}
+
 			arm.Move2StepMotors();
 //			stepsSetFlagSent = false;
 		}
@@ -274,82 +307,84 @@ int main(void) {
 		//+4 опустили якщо треба було або починаємо одночасний рух моторів.
 		if (arm.State == arm.ArmGripPreENDMOVE) {
 			arm.State = arm.ArmMOVE;
-			arm.Move2Motors(un_to.params.ang, un_to.params.lin);
+			arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
 		}
 
-		/*
-		 //з докаткою
+		if (arm.State == arm.ArmGripPreENDMOVEStep) {
+			arm.State = arm.ArmMOVE;
+			arm.Move2StepMotors();
+		}
 
-		 //	  if (timerFT1 && timerFT2) {
-		 //
-		 //		  timerFT1 = false;
-		 //		  timerFT2 = false;
-		 //
-		 //		  float lin = arm.GetLin();
-		 //		  un_send.params.lin = lin; //для АМТ223В-V
-		 ////		  un_now.params.lin = arm.ShiftZeroLin(lin); //для АМТ223С-V
-		 //
-		 //		  float ang = arm.GetAng();
-		 //		  un_send.params.ang = ang; //для АМТ223В-V
-		 //		  un_now.params.ang = arm.ShiftZeroAng(ang); //для АМТ223С-V
-		 //		  if (posCorrected) {
-		 ////			  timerFT1 = false;
-		 ////			  timerFT2 = false;
-		 //			  posCorrected = false;
-		 //
-		 //			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
-		 //					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
-		 //				  startCorrectPos = true;
-		 //				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
-		 //			  } else {
-		 //				  startCorrectPos = false;
-		 //				  if (un_now.params.hold != un_to.params.hold) {
-		 //					  gripperMoveFinished = false;
-		 //					  un_now.params.hold = un_to.params.hold;
-		 //					  arm.SetGripper(un_to.params.hold);
-		 //				  }
-		 //				  while (!gripperMoveFinished) {}
-		 //				  if (gripperMoveFinished) {
-		 //					  un_send.params.lin = 0;
-		 //					  un_send.params.ang = 0;
-		 //					  un_send.params.hold = 10;
-		 //					  HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-		 //							  12);
-		 //				  }
-		 //			  }
-		 //		  } else {
-		 //			  if (abs(un_now.params.ang - un_to.params.ang) > accuracy ||
-		 //			  					  abs(un_now.params.ang - un_to.params.ang) > accuracy) {
-		 //				  startCorrectPos = true;
-		 //				  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
-		 //			  }
-		 ////			  arm.MoveCorrectPosition(un_to.params.ang, un_to.params.lin);
-		 //		  }
-		 //	  }
-		 */
+		if (arm.anglePsteps == 0 && (arm.State == arm.ArmMOVE || arm.State == arm.ArmStepMOVE || arm.State == arm.ArmCorrectPosition)){
+			HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+			HAL_TIM_Base_Stop_IT(&htim1);
+			cntImpulse1 = 0;
+			timerFT1 = true;
+		}
 
-		//+5 обидва мотори доїхали по статусам в таймерах
-		if (timerFT1 && timerFT2) {
-			arm.State = arm.ArmEndMOVE;
+		if (arm.distPsteps == 0 && (arm.State == arm.ArmMOVE || arm.State == arm.ArmStepMOVE || arm.State == arm.ArmCorrectPosition)){
+			HAL_TIM_PWM_Stop(&htim2, TIM_CHANNEL_2);
+			HAL_TIM_Base_Stop_IT(&htim2);
+			cntImpulse2 = 0;
+			timerFT2 = true;
+		}
+
+		if (timerFT1 && timerFT2 && arm.State == arm.ArmMOVE) {
 			timerFT1 = false;
 			timerFT2 = false;
+			arm.State = arm.ArmCorrectPosition;
+//			arm.SetBuserState(2);
+			arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
+		}
 
-//			un_now.params.lin = un_to.params.lin;
-//			un_now.params.ang = un_to.params.ang;
+
+
+		//+5 обидва мотори доїхали по статусам в таймерах
+		if (timerFT1 && timerFT2 && arm.State == arm.ArmStepMOVE) {
+			timerFT1 = false;
+			timerFT2 = false;
+			arm.State = arm.ArmCorrectPosition;
+			arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
+		}
+		if (timerFT1 && timerFT2	&& arm.State == arm.ArmCorrectPosition) {
+//			arm.SetBuserState(3);
+			arm.State = arm.ArmGripPermit;
+		}
+
+		if (arm.State == arm.ArmGripPermit) {
 			//+6 Перевірка статуса зацепа чи він не посередині і встановлюємо потрібний опускаємо
+//			arm.SetBuserState(1);
 			int tempGripState = arm.GetGripperState();
 			if ((tempGripState == 1 || tempGripState == 0)
 					&& (tempGripState != un_to.params.hold)) {
-				arm.State = arm.ArmGripMOVE;
 
+				arm.lastGripState = tempGripState; //записали поточне положеня
+
+				arm.State = arm.ArmGripMOVE;
 				arm.SetGripper(un_to.params.hold);
-			} else {
-				arm.State = arm.ArmGripENDMOVE;
+			} else if (tempGripState == un_to.params.hold) {
+				arm.State = arm.ArmGripENDMOVE;  //!!!!!!!!!!!!!!!! УВАГА ТУТ
+			} else if (tempGripState == 3) {
+				arm.State = arm.ArmGripMOVEError;  //!!!!!!!!!!!!!!!! УВАГА ТУТ
+			}
+		}
+
+		//якщо кроки закінчились а кінцевік не спрацював
+		if (arm.State == arm.ArmGripMOVEError) {
+			arm.State = arm.ArmGripMOVE;
+			//їдемо в протилежну сторону
+
+			if (arm.lastGripState == 1) {
+				arm.SetGripper(1);
+			} else {//if (arm.lastGripState == 0) {
+				arm.SetGripper(0);
 			}
 		}
 
 		// +7 закінчили рух зацепа
 		if (arm.State == arm.ArmGripENDMOVE) {
+//			arm.SetBuserState(2);
+
 			arm.State = arm.ArmSTAND;
 			un_send.params.lin = 0;
 			un_send.params.ang = 0;
@@ -358,19 +393,21 @@ int main(void) {
 			un_send.params.hold = 10;
 			gripperMoveFinished = false;
 			moveFinished = false;
-			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
-					12);
+			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),12);
+
 		}
 
 		//запит на читання координат
 		if (arm.getPrintState() && arm.State == arm.ArmGetData) {
 			arm.State = arm.ArmSTAND;
 			float lin = arm.GetLin();
-			un_send.params.lin = lin;
+			un_send.params.lin = 0;
+			un_send.params.lin_2 = lin;
 //		  un_send.params.lin = arm.ShiftZeroLin(lin); //це для АМТ223С-V
 			HAL_Delay(10);
 			float ang = arm.GetAng();
-			un_send.params.ang = ang;
+			un_send.params.ang = 0;
+			un_send.params.ang_2 = ang;
 //		  un_send.params.ang = arm.ShiftZeroAng(ang); //це для АМТ223С-V
 			un_send.params.hold = arm.GetGripperState();
 			un_send.params.PoT_lin = 0;
@@ -387,6 +424,8 @@ int main(void) {
 			//відправляємо "все ок" до малини
 			un_send.params.lin = 0;
 			un_send.params.ang = 0;
+			un_send.params.lin_2 = 0;
+			un_send.params.ang_2 = 0;
 			un_send.params.PoT_lin = 0;
 			un_send.params.PoT_ang = 0;
 			un_send.params.hold = 10;
@@ -402,8 +441,12 @@ int main(void) {
 			//відправляємо "все ок" до малини
 			un_send.params.lin = 0;
 			un_send.params.ang = 0;
+			un_send.params.lin_2 = 0;
+			un_send.params.ang_2 = 0;
 			un_send.params.PoT_lin = 0;
 			un_send.params.PoT_ang = 0;
+			un_send.params.lin_2 = 0;
+			un_send.params.ang_2 = 0;
 			un_send.params.hold = 10;
 			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
 					12);
@@ -415,6 +458,8 @@ int main(void) {
 			arm.State = arm.ArmSTAND;
 			un_send.params.lin = 0;
 			un_send.params.ang = 0;
+			un_send.params.lin_2 = 0;
+			un_send.params.ang_2 = 0;
 			un_send.params.PoT_lin = 0;
 			un_send.params.PoT_ang = 0;
 			un_send.params.hold = version;
@@ -815,8 +860,10 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 			un_to.params.lin = un_get.params.lin;
 			un_to.params.ang = un_get.params.ang;
-			un_to.params.PoT_ang=0;
-			un_to.params.PoT_lin=0;
+			un_to.params.PoT_ang = 0;
+			un_to.params.PoT_lin = 0;
+			un_to.params.lin_2 = un_get.params.lin_2;
+			un_to.params.ang_2 = un_get.params.ang_2;
 			un_to.params.hold = un_get.params.hold;
 //			arm.moveGripper = un_get.params.hold;
 			break;
@@ -848,13 +895,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 			un_to.params.ang = un_get.params.ang; //це кроки 2
 			un_to.params.PoT_ang = un_get.params.PoT_ang; //це період 2
 			un_to.params.PoT_lin = un_get.params.PoT_lin; //це період 1
+			un_to.params.lin_2 = un_get.params.lin_2;
+			un_to.params.ang_2 = un_get.params.ang_2;
 			un_to.params.hold = un_get.params.hold % 10; //парсимо hold 0 або 1
 
 			break;
 
 		case 40:
 			//перевірка чи були налаштовані таймери до цього для руху по крокам
-				arm.State = arm.ArmStepStartMOVE;
+			arm.State = arm.ArmStepStartMOVE;
 
 			break;
 
@@ -925,7 +974,7 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
 
 void debounce_check_pins_and_set_flag() {
 	static uint32_t last_check_time = 0;
-	static uint32_t debounce_delay = 2; // Затримка для віднімання дребезгу, в мілісекундах, насправді дребезг всього 120 мікросекунд!!!!
+	static uint32_t debounce_delay = 15; // Затримка для віднімання дребезгу, в мілісекундах, насправді дребезг всього 120 мікросекунд!!!!
 	static bool checkFlag1 = false;
 	static bool checkFlag2 = false;
 //	static uint8_t last_EndCap1_state = GPIO_PIN_RESET;
@@ -1043,25 +1092,34 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 	} else if (htim->Instance == TIM3) {
 
 		cntImpulse3++;
-		if (cntImpulse3 >= arm.gripperPsteps || gripIntFlag == true) {
-//			bool local_flag = gripIntFlag;
+
+		// якщо кроки закінчилися але кінцевік не спрацював, то зупиняємось.
+		if (cntImpulse3 >= arm.gripperPsteps && gripIntFlag == false) {
+			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+			HAL_TIM_Base_Stop_IT(&htim3);
+			arm.State = arm.ArmGripMOVEError;
+		} else if (cntImpulse3 >= arm.gripperPsteps || gripIntFlag == true) {
 			gripIntFlag = false;
 			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim3);
-//			arm.SetEnable(3, false);
-			// COMMENT 12
-//			arm.SetEnable(3, true);
 
 			if (arm.State == arm.ArmGripPreMOVE) {
 				arm.State = arm.ArmGripPreENDMOVE;
+			} else if (arm.State == arm.ArmGripPreMOVEStep) {
+				arm.State = arm.ArmGripPreENDMOVEStep;
 			} else if (arm.State == arm.ArmGripMOVE) {
 				arm.State = arm.ArmGripENDMOVE;
 			}
 
 			cntImpulse3 = 0;
-			arm.stateMoveM3 = false;
 			timerFT3 = true;
 		}
+//		if (cntImpulse3 > arm.gripperPsteps) {
+//			arm.SetBuserState(1);
+//			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+//			HAL_TIM_Base_Stop_IT(&htim3);
+//			arm.State = arm.ArmGripMOVEError;
+//		}
 	}
 	/* USER CODE END Callback 0 */
 //  if (htim->Instance == TIM4) {

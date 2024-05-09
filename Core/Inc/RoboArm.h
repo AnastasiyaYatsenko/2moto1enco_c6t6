@@ -65,6 +65,8 @@ public:
 
 	uint32_t distPsteps = 0, anglePsteps = 0;
 	uint32_t gripperPsteps = 67000;
+	uint8_t lastGripState = 0;
+
 	float distMax = 210.0;
 	float distMin = 48.0;
 
@@ -92,7 +94,7 @@ public:
 
 	int moveGripper;
 
-	bool stateMoveM1 = false, stateMoveM2 = false, stateMoveM3= false;
+	bool stateMoveM1 = false, stateMoveM2 = false;
 	float defaultAngle, defaultDistanse; // стандартний кут //0 120 240 та дистанція 124 мм
 	bool stateMovement[2];
 	bool inverseLinZero = true;
@@ -109,12 +111,18 @@ public:
 	ArmGripMOVE, //руха зацепа зараз йде
 	ArmGripENDMOVE,  //зацеп закінчив зачеплятись
 	ArmGripPreMOVE,  //Рух зацепа НА початку руху перед перемішенням руки в точку (опустити якщо зачеплено)
+	ArmGripPreMOVEStep,  //Рух зацепа НА початку руху перед перемішенням руки в точку (опустити якщо зачеплено)
 	ArmGripPreENDMOVE, //зачеп було опущено після PRE руху
+	ArmGripPreENDMOVEStep,
 	ArmEndMOVE,        //ми доїхали
 	ArmSTOP,			//рука в екстренному стопі
 	ArmGetData, 		//запит даних
 	ArmSetZero,			//встановлено сет зеро
 	ArmGetVers, 		//запит версії
+	ArmGripMOVEError,   //помилка руху зачепа
+	ArmGripPermit,      //
+	ArmCorrectPosition,
+
 	};
 
 	StateSystem State;
@@ -132,6 +140,9 @@ public:
 	int Move2Motors(float, float); // move 2 mottors simultaneously
 	int Set2StepMotors(float,int, float, int);
 	int Move2StepMotors(); //start timers
+
+	int Move2CGripRollon();
+
 	int SetBuserState(int State);
 //	int MoveLinear(float);
 //	int MoveAngle(float);
