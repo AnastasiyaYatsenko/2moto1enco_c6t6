@@ -363,7 +363,7 @@ int main(void) {
 				arm.State = arm.ArmGripMOVE;
 				arm.SetGripper(un_to.params.hold);
 			} else if (tempGripState == un_to.params.hold) {
-				arm.State = arm.ArmGripENDMOVE;  //!!!!!!!!!!!!!!!! УВАГА ТУТ
+				arm.State = arm.ArmGripENDMOVE;
 			} else if (tempGripState == 3) {
 				arm.State = arm.ArmGripMOVEError;  //!!!!!!!!!!!!!!!! УВАГА ТУТ
 			}
@@ -373,24 +373,33 @@ int main(void) {
 		if (arm.State == arm.ArmGripMOVEError) {
 			arm.State = arm.ArmGripMOVE;
 			//їдемо в протилежну сторону
+			arm.SetGripper(un_to.params.hold);
 
-			if (arm.lastGripState == 1) {
-				arm.SetGripper(1);
-			} else {//if (arm.lastGripState == 0) {
-				arm.SetGripper(0);
-			}
+//			if (arm.lastGripState == 1) {
+//				arm.SetGripper(1);
+//			} else {//if (arm.lastGripState == 0) {
+//				arm.SetGripper(0);
+//			}
 		}
+
+//		if (arm.GetGripperState()==un_to.params.hold && arm.State = arm.ArmGripENDMOVE){
+//			arm.State = arm.ArmGripENDMOVE;
+//		}
 
 		// +7 закінчили рух зацепа
 		if (arm.State == arm.ArmGripENDMOVE) {
-//			arm.SetBuserState(2);
-
 			arm.State = arm.ArmSTAND;
+			float lin = arm.GetLin();
 			un_send.params.lin = 0;
+			un_send.params.lin_2 = lin;
+			HAL_Delay(10);
+			float ang = arm.GetAng();
 			un_send.params.ang = 0;
+			un_send.params.ang_2 = ang;
+			un_send.params.hold = arm.GetGripperState()+10;
 			un_send.params.PoT_lin = 0;
 			un_send.params.PoT_ang = 0;
-			un_send.params.hold = 10;
+
 			gripperMoveFinished = false;
 			moveFinished = false;
 			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),12);
@@ -436,6 +445,7 @@ int main(void) {
 
 		//встановлення нуля
 		if (arm.State == arm.ArmSetZero) {
+			arm.State = arm.ArmSTAND;
 			arm.SetZeroEncoders();
 //		  arm.SetSoftwareZero();
 			//відправляємо "все ок" до малини
@@ -451,7 +461,7 @@ int main(void) {
 			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),
 					12);
 
-			arm.State = arm.ArmSTAND;
+//			arm.State = arm.ArmSTAND;
 		}
 
 		if (arm.State == arm.ArmGetVers) {
