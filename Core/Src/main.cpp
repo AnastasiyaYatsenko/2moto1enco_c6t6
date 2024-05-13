@@ -109,6 +109,8 @@ union UN {
 	uint8_t bytes[sizeof(params)];
 } un_get, un_send, un_to, un_now;
 
+float lin_beforeCorrect, ang_beforeCorrect;
+
 void debounce_check_pins_and_set_flag();
 /* USER CODE END PV */
 
@@ -217,10 +219,12 @@ int main(void) {
 	arm.State = arm.ArmSTAND;
 
 	for (int i=0; i<3; i++){
-		float lin = arm.GetLin();
+		arm.GetLin();
 		HAL_Delay(10);
-		float ang = arm.GetAng();
+		arm.GetAng();
 	}
+
+//	arm.SetLinAngMicrostepsAndParams(4);
 
 //	debounce_check_pins_and_set_flag();
 
@@ -237,7 +241,7 @@ int main(void) {
 		}
 
 		//!!!!!!!!!ЯКЩО зараз йде рух зацепа то ми постійно в цій умові перевіряємо стан зацепа і виставляємо флаг
-		if (arm.State == arm.ArmGripPreMOVE || arm.State == arm.ArmGripMOVE) {
+		if (arm.State == arm.ArmGripPreMOVE || arm.State == arm.ArmGripMOVE || arm.State == arm.ArmGripMOVERetry) {
 
 			debounce_check_pins_and_set_flag();
 
@@ -333,6 +337,28 @@ int main(void) {
 			timerFT1 = false;
 			timerFT2 = false;
 			arm.State = arm.ArmCorrectPosition;
+
+			lin_beforeCorrect = arm.GetLin();
+//			un_send.params.lin = 0;
+//			un_send.params.lin_2 = lin;
+			HAL_Delay(10);
+			ang_beforeCorrect = arm.GetAng();
+//			un_send.params.ang = 0;
+//			un_send.params.ang_2 = ang;
+//			un_send.params.hold = arm.GetGripperState()+10;
+//			un_send.params.PoT_lin = 0;
+//			un_send.params.PoT_ang = 0;
+//			HAL_UART_Transmit(&huart1, un_send.bytes, sizeof(un_send.bytes),12);
+//			HAL_Delay(1);
+
+//			arm.drvMicroSteps = 128;
+//			arm.gripperPsteps = 523*arm.drvMicroSteps;
+//			arm.steps4OneMM = motorStep * arm.drvMicroSteps / (beltRatio * spoolStep);
+
+//			arm.SetLinAngMicrostepsAndParams(7);
+
+			// TODO change microsteps to 128
+			// UPDATE VALUES FOR ARM, LIKE STEPS FOR 1 MM
 //			arm.SetBuserState(2);
 			arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
 		}
@@ -344,11 +370,27 @@ int main(void) {
 			timerFT1 = false;
 			timerFT2 = false;
 			arm.State = arm.ArmCorrectPosition;
+
+			lin_beforeCorrect = arm.GetLin();
+			HAL_Delay(10);
+			ang_beforeCorrect = arm.GetAng();
+
+//			arm.SetLinAngMicrostepsAndParams(7);
+
 			arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
 		}
 		if (timerFT1 && timerFT2	&& arm.State == arm.ArmCorrectPosition) {
 //			arm.SetBuserState(3);
+			// TODO change microsteps to 32/16
+			// UPDATE VALUES FOR ARM, LIKE STEPS FOR 1 MM
+			timerFT1 = false;
+			timerFT2 = false;
+//			arm.SetLinAngMicrostepsAndParams(4);
 			arm.State = arm.ArmGripPermit;
+//			arm.drvMicroSteps = 16;
+//			arm.gripperPsteps = 523*arm.drvMicroSteps;
+//			arm.steps4OneMM = motorStep * arm.drvMicroSteps / (beltRatio * spoolStep);
+//			arm.SetLinAngMicrostepsAndParams(4);
 		}
 
 		if (arm.State == arm.ArmGripPermit) {
@@ -371,9 +413,9 @@ int main(void) {
 
 		//якщо кроки закінчились а кінцевік не спрацював
 		if (arm.State == arm.ArmGripMOVEError) {
-			arm.State = arm.ArmGripMOVE;
+			arm.State = arm.ArmGripMOVERetry;
 			//їдемо в протилежну сторону
-			arm.SetGripper(un_to.params.hold);
+			arm.SetGripper(0); // TODO to last stable position
 
 //			if (arm.lastGripState == 1) {
 //				arm.SetGripper(1);
@@ -390,11 +432,13 @@ int main(void) {
 		if (arm.State == arm.ArmGripENDMOVE) {
 			arm.State = arm.ArmSTAND;
 			float lin = arm.GetLin();
-			un_send.params.lin = 0;
+//			un_send.params.lin = 0;
+			un_send.params.lin = lin_beforeCorrect;
 			un_send.params.lin_2 = lin;
 			HAL_Delay(10);
 			float ang = arm.GetAng();
-			un_send.params.ang = 0;
+//			un_send.params.ang = 0;
+			un_send.params.ang = ang_beforeCorrect;
 			un_send.params.ang_2 = ang;
 			un_send.params.hold = arm.GetGripperState()+10;
 			un_send.params.PoT_lin = 0;
@@ -1119,6 +1163,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 				arm.State = arm.ArmGripPreENDMOVEStep;
 			} else if (arm.State == arm.ArmGripMOVE) {
 				arm.State = arm.ArmGripENDMOVE;
+			} else if (arm.State == arm.ArmGripMOVERetry) {
+				arm.State = arm.ArmGripPermit;
 			}
 
 			cntImpulse3 = 0;

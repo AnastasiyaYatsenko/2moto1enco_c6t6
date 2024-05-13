@@ -586,6 +586,24 @@ int RoboArm::SetMicrosteps4All(uint8_t microsteps_per_step) {
 	return 0;
 }
 
+int RoboArm::SetLinAngMicrostepsAndParams(uint8_t microsteps_per_step) {
+
+	tmcd_angle.setMicrostepsPerStepPowerOfTwo(microsteps_per_step);
+//	tmcd_gripper.setMicrostepsPerStepPowerOfTwo(microsteps_per_step);
+	tmcd_linear.setMicrostepsPerStepPowerOfTwo(microsteps_per_step);
+
+	int steps = 1;
+	for (int i=0; i<microsteps_per_step; i++){
+		steps *= 2;
+	}
+
+	drvMicroSteps = steps;
+//	gripperPsteps = 523*arm.drvMicroSteps;
+	steps4OneMM = motorStep * drvMicroSteps / (beltRatio * spoolStep);
+
+	return 0;
+}
+
 int RoboArm::SetSettEncoders(SPI_HandleTypeDef &arm_hspi1T,
 		GPIO_TypeDef *CS_GPIO_Port_Enc1T, uint16_t CS_Pin_Enc1T,
 		GPIO_TypeDef *CS_GPIO_Port_Enc2T, uint16_t CS_Pin_Enc2T,

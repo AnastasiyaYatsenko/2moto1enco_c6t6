@@ -14,7 +14,7 @@
 #include "TMC2209.h"
 // #include "TMC2209.h"
 
-#define drvMicroSteps 128
+//#define drvMicroSteps 128
 // #define drvMicroSteps 16
 #define spoolStep 20
 #define motorStep 200
@@ -26,8 +26,11 @@
 
 class RoboArm{
 public:
+//	int drvMicroSteps = 16;
+	int drvMicroSteps = 128;
 	float linearStepsMil = motorStep * drvMicroSteps / (beltRatio * spoolStep);
-	int steps4OneMM = 200 * 128 / (2 * 20);
+//	int steps4OneMM = 200 * 128 / (2 * 20);
+	int steps4OneMM = motorStep * drvMicroSteps / (beltRatio * spoolStep);
 	// Settings for moto/rs
 	TIM_HandleTypeDef *htim1M1;
 	TIM_HandleTypeDef *htim2M2;
@@ -64,7 +67,8 @@ public:
 	uint16_t Buser_Pin_Ind;
 
 	uint32_t distPsteps = 0, anglePsteps = 0;
-	uint32_t gripperPsteps = 67000;
+//	uint32_t gripperPsteps = 67000; // TODO
+	uint32_t gripperPsteps = 523*drvMicroSteps;
 	uint8_t lastGripState = 0;
 
 	float distMax = 210.0;
@@ -120,6 +124,7 @@ public:
 	ArmSetZero,			//встановлено сет зеро
 	ArmGetVers, 		//запит версії
 	ArmGripMOVEError,   //помилка руху зачепа
+	ArmGripMOVERetry,   //помилка руху зачепа
 	ArmGripPermit,      //
 	ArmCorrectPosition,
 
@@ -181,6 +186,7 @@ public:
 	//			UART_HandleTypeDef &huart_tmcT);
 
 	int SetMicrosteps4All(uint8_t);
+	int SetLinAngMicrostepsAndParams(uint8_t);
 	int SetEnable(uint16_t numMotor, bool state);
 	int factoryReset();
 
