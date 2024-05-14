@@ -186,7 +186,7 @@ int RoboArm::Move2Motors(float angle, float distance) {
 		if (lastPosAngle < angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_RESET);
 			tmcd_angle.enableInverseMotorDirection();
-		} else if (lastPosAngle > angle) {
+		} else {//if (lastPosAngle > angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_SET);
 
 			tmcd_angle.disableInverseMotorDirection();
@@ -196,7 +196,7 @@ int RoboArm::Move2Motors(float angle, float distance) {
 		if (lastPosAngle < angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_SET);
 			tmcd_angle.disableInverseMotorDirection();
-		} else if (lastPosAngle > angle) {
+		} else {//if (lastPosAngle > angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_RESET);
 			tmcd_angle.enableInverseMotorDirection();
 		}
@@ -205,7 +205,7 @@ int RoboArm::Move2Motors(float angle, float distance) {
 	if (lastPosLinear < distance) {
 //			HAL_GPIO_WritePin(Dir2_GPIO_Port_M2, Dir2_Pin_M2, GPIO_PIN_SET);
 		tmcd_linear.enableInverseMotorDirection();
-	} else if (lastPosLinear > distance) {
+	} else {//if (lastPosLinear > distance) {
 //			HAL_GPIO_WritePin(Dir2_GPIO_Port_M2, Dir2_Pin_M2, GPIO_PIN_RESET);
 		tmcd_linear.disableInverseMotorDirection();
 	}
@@ -221,6 +221,9 @@ int RoboArm::Move2Motors(float angle, float distance) {
 
 //	uint32_t periodM1 = 1200; //reduce to 600-400 mks for 32 microsteps
 	uint32_t periodM1 = 30;
+	if (State == ArmCorrectPosition){
+		periodM1 = 600;
+	}
 	uint32_t psc = 72 - 1;
 
 	float delimiter = 1;
@@ -296,7 +299,7 @@ int RoboArm::Set2StepMotors(float stepLinT, int periodLinT, float stepAngleT,
 	if (stepAngleT < 0) {
 		tmcd_angle.enableInverseMotorDirection();
 //		tempAngDir = -1;
-	} else if (stepAngleT > 0) {
+	} else {//if (stepAngleT > 0) {
 		tmcd_angle.disableInverseMotorDirection();
 //		tempAngDir = 1;
 	}
@@ -304,7 +307,7 @@ int RoboArm::Set2StepMotors(float stepLinT, int periodLinT, float stepAngleT,
 	if (stepLinT < 0) {
 		tmcd_linear.enableInverseMotorDirection();
 //		tempLinDir = -1;
-	} else if (stepLinT > 0) {
+	} else {//if (stepLinT > 0) {
 		tmcd_linear.disableInverseMotorDirection();
 //		tempLinDir = 1;
 	}
@@ -658,59 +661,20 @@ float RoboArm::GetLin() {
 	while (posnowT_2 == 0xFFFF && ++attempts < 6) // +1.2 вдвічі збільшено кількість разів, можливо йому не вистачає. Обмежено, щоб не завис, якщо енкодери впали зовсім
 		posnowT_2 = GetPosEncoders(2); //try again
 
-//	if (posnowT_2 == 0xFFFF) {
-//		return -1;
-//	}
-
-//	float ang_pos = GetAngleEncoders(posnowT_2);
-//	float pos_actual = GetLinEncoders(ang_pos);
-//	float pos = pos_actual + defaultDistanse;
-
 	float pos = -1.0;
 	float enc2mm = 16384.0 / (2.0 * 20.0 * 33.0 * 33.0 / (13.0 * 13.0)); //число одиниць енкодера на 1 мм лінійного руху
 
+	// 0-5000 on encoder = 124mm-48mm;
 	if (posnowT_2 <= 5000) {
 		//the motor is somewhere between 48mm and 124mm
-//		posnowT_2 = posnowT_2 - 16384;
-//		float temp = float(posnowT_2) - 16384.0;
 		pos = defaultDistanse - float(posnowT_2) / enc2mm;
 
-//		float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
-//		if (inverseLinZero){
-//			angleEncoder = abs(360-angleEncoder);
-//		}
-//
-//		float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
-//
-////		pos = defaultDistanse - distPsteps/steps4OneMM;
-//		pos = distPsteps/steps4OneMM;
-	} else { //if (posnowT_2 <= 9000){ //приблизноб по факту десь +- 8963
+	} else { //if (posnowT_2 <= 9000){ //приблизно по факту десь +- 8963
 		pos = defaultDistanse + (16384.0 - float(posnowT_2)) / enc2mm;
 		// the motor is somewhere 124...end of the hand
-//		float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
-//		if (inverseLinZero){
-//			angleEncoder = abs(360-angleEncoder);
-//		}
 
-//		float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
-
-//		pos = -float(posnowT_2) / enc2mm + defaultDistanse;
-
-//		pos = distPsteps/steps4OneMM + defaultDistanse;
-//		pos = distPsteps/steps4OneMM;
 	}
 
-//	float angleEncoder = (posnowT_2 * 360.0 ) / 16384;  //кут енкодера
-//	if (inverseLinZero){
-//		angleEncoder = abs(360-angleEncoder);
-//	}
-//
-//	float distPsteps = (angleEncoder * 6.4516129 * 200 * 128) / 360;  //Кроки із кута
-//
-//	float pos = distPsteps/steps4OneMM + defaultDistanse;
-//
-//	if (pos > distMax)
-//		pos -= distMax;
 
 	return pos;
 }

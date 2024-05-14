@@ -224,7 +224,7 @@ int main(void) {
 		arm.GetAng();
 	}
 
-//	arm.SetLinAngMicrostepsAndParams(4);
+	arm.SetLinAngMicrostepsAndParams(4);
 
 //	debounce_check_pins_and_set_flag();
 
@@ -355,7 +355,7 @@ int main(void) {
 //			arm.gripperPsteps = 523*arm.drvMicroSteps;
 //			arm.steps4OneMM = motorStep * arm.drvMicroSteps / (beltRatio * spoolStep);
 
-//			arm.SetLinAngMicrostepsAndParams(7);
+			arm.SetLinAngMicrostepsAndParams(7);
 
 			// TODO change microsteps to 128
 			// UPDATE VALUES FOR ARM, LIKE STEPS FOR 1 MM
@@ -375,7 +375,7 @@ int main(void) {
 			HAL_Delay(10);
 			ang_beforeCorrect = arm.GetAng();
 
-//			arm.SetLinAngMicrostepsAndParams(7);
+			arm.SetLinAngMicrostepsAndParams(7);
 
 			arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
 		}
@@ -390,7 +390,7 @@ int main(void) {
 //			arm.drvMicroSteps = 16;
 //			arm.gripperPsteps = 523*arm.drvMicroSteps;
 //			arm.steps4OneMM = motorStep * arm.drvMicroSteps / (beltRatio * spoolStep);
-//			arm.SetLinAngMicrostepsAndParams(4);
+			arm.SetLinAngMicrostepsAndParams(4);
 		}
 
 		if (arm.State == arm.ArmGripPermit) {

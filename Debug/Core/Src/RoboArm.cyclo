@@ -5,29 +5,29 @@
 ../Core/Src/RoboArm.cpp:11:5:int RoboArm::CloseGripper()	1
 ../Core/Src/RoboArm.cpp:15:5:int RoboArm::EmergencyStop()	1
 ../Core/Src/RoboArm.cpp:33:5:int RoboArm::MoveCorrectPosition(float, float)	10
-../Core/Src/RoboArm.cpp:158:5:int RoboArm::Move2Motors(float, float)	10
-../Core/Src/RoboArm.cpp:271:5:int RoboArm::Set2StepMotors(float, int, float, int)	7
-../Core/Src/RoboArm.cpp:327:5:int RoboArm::Move2StepMotors()	1
-../Core/Src/RoboArm.cpp:346:5:int RoboArm::Move2CGripRollon()	1
-../Core/Src/RoboArm.cpp:356:5:int RoboArm::SetBuserState(int)	5
-../Core/Src/RoboArm.cpp:475:5:int RoboArm::factoryReset()	1
-../Core/Src/RoboArm.cpp:484:5:int RoboArm::GetGripperState()	5
-../Core/Src/RoboArm.cpp:507:5:int RoboArm::SetSettGripper(GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
-../Core/Src/RoboArm.cpp:525:5:int RoboArm::SetGripper(int)	3
-../Core/Src/RoboArm.cpp:563:5:int RoboArm::setPrintState(bool)	2
-../Core/Src/RoboArm.cpp:572:6:bool RoboArm::getPrintState()	2
-../Core/Src/RoboArm.cpp:580:5:int RoboArm::SetMicrosteps4All(uint8_t)	1
-../Core/Src/RoboArm.cpp:589:5:int RoboArm::SetLinAngMicrostepsAndParams(uint8_t)	2
-../Core/Src/RoboArm.cpp:607:5:int RoboArm::SetSettEncoders(SPI_HandleTypeDef&, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, uint8_t)	1
-../Core/Src/RoboArm.cpp:621:7:float RoboArm::GetAngleEncoders(uint32_t)	1
-../Core/Src/RoboArm.cpp:626:7:float RoboArm::GetLinEncoders(float)	2
-../Core/Src/RoboArm.cpp:635:10:uint32_t RoboArm::GetPosEncoders(uint8_t)	3
-../Core/Src/RoboArm.cpp:654:7:float RoboArm::GetLin()	5
-../Core/Src/RoboArm.cpp:718:7:float RoboArm::GetAng()	5
-../Core/Src/RoboArm.cpp:735:5:int RoboArm::SetZeroEncoders()	1
-../Core/Src/RoboArm.cpp:775:7:float RoboArm::UnshiftZeroAng(float)	2
-../Core/Src/RoboArm.cpp:782:7:float RoboArm::UnshiftZeroLin(float)	2
-../Core/Src/RoboArm.cpp:789:7:float RoboArm::ShiftZeroAng(float)	2
-../Core/Src/RoboArm.cpp:796:7:float RoboArm::ShiftZeroLin(float)	2
-../Core/Src/RoboArm.cpp:803:5:int RoboArm::SetSettMotors(UART_HandleTypeDef&, TIM_HandleTypeDef&, TIM_HandleTypeDef&, TIM_HandleTypeDef&, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
-../Core/Src/RoboArm.cpp:860:5:int RoboArm::SetEnable(uint16_t, bool)	5
+../Core/Src/RoboArm.cpp:158:5:int RoboArm::Move2Motors(float, float)	8
+../Core/Src/RoboArm.cpp:274:5:int RoboArm::Set2StepMotors(float, int, float, int)	5
+../Core/Src/RoboArm.cpp:330:5:int RoboArm::Move2StepMotors()	1
+../Core/Src/RoboArm.cpp:349:5:int RoboArm::Move2CGripRollon()	1
+../Core/Src/RoboArm.cpp:359:5:int RoboArm::SetBuserState(int)	5
+../Core/Src/RoboArm.cpp:478:5:int RoboArm::factoryReset()	1
+../Core/Src/RoboArm.cpp:487:5:int RoboArm::GetGripperState()	5
+../Core/Src/RoboArm.cpp:510:5:int RoboArm::SetSettGripper(GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
+../Core/Src/RoboArm.cpp:528:5:int RoboArm::SetGripper(int)	3
+../Core/Src/RoboArm.cpp:566:5:int RoboArm::setPrintState(bool)	2
+../Core/Src/RoboArm.cpp:575:6:bool RoboArm::getPrintState()	2
+../Core/Src/RoboArm.cpp:583:5:int RoboArm::SetMicrosteps4All(uint8_t)	1
+../Core/Src/RoboArm.cpp:592:5:int RoboArm::SetLinAngMicrostepsAndParams(uint8_t)	2
+../Core/Src/RoboArm.cpp:610:5:int RoboArm::SetSettEncoders(SPI_HandleTypeDef&, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, uint8_t)	1
+../Core/Src/RoboArm.cpp:624:7:float RoboArm::GetAngleEncoders(uint32_t)	1
+../Core/Src/RoboArm.cpp:629:7:float RoboArm::GetLinEncoders(float)	2
+../Core/Src/RoboArm.cpp:638:10:uint32_t RoboArm::GetPosEncoders(uint8_t)	3
+../Core/Src/RoboArm.cpp:657:7:float RoboArm::GetLin()	5
+../Core/Src/RoboArm.cpp:682:7:float RoboArm::GetAng()	5
+../Core/Src/RoboArm.cpp:699:5:int RoboArm::SetZeroEncoders()	1
+../Core/Src/RoboArm.cpp:739:7:float RoboArm::UnshiftZeroAng(float)	2
+../Core/Src/RoboArm.cpp:746:7:float RoboArm::UnshiftZeroLin(float)	2
+../Core/Src/RoboArm.cpp:753:7:float RoboArm::ShiftZeroAng(float)	2
+../Core/Src/RoboArm.cpp:760:7:float RoboArm::ShiftZeroLin(float)	2
+../Core/Src/RoboArm.cpp:767:5:int RoboArm::SetSettMotors(UART_HandleTypeDef&, TIM_HandleTypeDef&, TIM_HandleTypeDef&, TIM_HandleTypeDef&, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t, GPIO_TypeDef*, uint16_t)	1
+../Core/Src/RoboArm.cpp:824:5:int RoboArm::SetEnable(uint16_t, bool)	5

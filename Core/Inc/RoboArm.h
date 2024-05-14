@@ -26,8 +26,8 @@
 
 class RoboArm{
 public:
-//	int drvMicroSteps = 16;
-	int drvMicroSteps = 128;
+	int drvMicroSteps = 16;
+//	int drvMicroSteps = 128;
 	float linearStepsMil = motorStep * drvMicroSteps / (beltRatio * spoolStep);
 //	int steps4OneMM = 200 * 128 / (2 * 20);
 	int steps4OneMM = motorStep * drvMicroSteps / (beltRatio * spoolStep);
@@ -67,8 +67,8 @@ public:
 	uint16_t Buser_Pin_Ind;
 
 	uint32_t distPsteps = 0, anglePsteps = 0;
-//	uint32_t gripperPsteps = 67000; // TODO
-	uint32_t gripperPsteps = 523*drvMicroSteps;
+	uint32_t gripperPsteps = 67000; // TODO
+//	uint32_t gripperPsteps = 523*drvMicroSteps;
 	uint8_t lastGripState = 0;
 
 	float distMax = 210.0;
