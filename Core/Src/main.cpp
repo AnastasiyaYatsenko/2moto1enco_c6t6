@@ -85,7 +85,9 @@ bool getVersion = false;
 
 bool stepsSetFlagSent = false;
 
-float accuracy = 0.05;
+float accuracy = 0.005;
+int max_correctAttempts = 10;
+int current_correctAttempt = 0;
 
 float recAngleF = 0.0;
 uint16_t recDist = 0;
@@ -337,6 +339,7 @@ int main(void) {
 			timerFT1 = false;
 			timerFT2 = false;
 			arm.State = arm.ArmCorrectPosition;
+			current_correctAttempt = 0;
 
 			lin_beforeCorrect = arm.GetLin();
 //			un_send.params.lin = 0;
@@ -370,6 +373,7 @@ int main(void) {
 			timerFT1 = false;
 			timerFT2 = false;
 			arm.State = arm.ArmCorrectPosition;
+			current_correctAttempt = 0;
 
 			lin_beforeCorrect = arm.GetLin();
 			HAL_Delay(10);
@@ -381,16 +385,36 @@ int main(void) {
 		}
 		if (timerFT1 && timerFT2	&& arm.State == arm.ArmCorrectPosition) {
 //			arm.SetBuserState(3);
-			// TODO change microsteps to 32/16
-			// UPDATE VALUES FOR ARM, LIKE STEPS FOR 1 MM
 			timerFT1 = false;
 			timerFT2 = false;
+
+			float lin = arm.GetLin();
+			float ang = arm.GetAng();
+			float delta_lin = abs(lin - un_to.params.lin_2);
+			float delta_ang = abs(ang - un_to.params.ang_2);
+			if (360.0 - delta_ang < delta_ang){
+				delta_ang = 360.0 - delta_ang;
+			}
+
+			if (((delta_lin <= accuracy) && (delta_ang <= accuracy)) || current_correctAttempt >= max_correctAttempts){
+//				timerFT1 = false;
+//				timerFT2 = false;
+				arm.State = arm.ArmGripPermit;
+				current_correctAttempt = 0;
+				arm.SetLinAngMicrostepsAndParams(4);
+			} else {
+				current_correctAttempt += 1;
+				arm.Move2Motors(un_to.params.ang_2, un_to.params.lin_2);
+			}
+
+//			timerFT1 = false;
+//			timerFT2 = false;
+////			arm.SetLinAngMicrostepsAndParams(4);
+//			arm.State = arm.ArmGripPermit;
+////			arm.drvMicroSteps = 16;
+////			arm.gripperPsteps = 523*arm.drvMicroSteps;
+////			arm.steps4OneMM = motorStep * arm.drvMicroSteps / (beltRatio * spoolStep);
 //			arm.SetLinAngMicrostepsAndParams(4);
-			arm.State = arm.ArmGripPermit;
-//			arm.drvMicroSteps = 16;
-//			arm.gripperPsteps = 523*arm.drvMicroSteps;
-//			arm.steps4OneMM = motorStep * arm.drvMicroSteps / (beltRatio * spoolStep);
-			arm.SetLinAngMicrostepsAndParams(4);
 		}
 
 		if (arm.State == arm.ArmGripPermit) {
