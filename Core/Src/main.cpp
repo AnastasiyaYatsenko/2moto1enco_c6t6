@@ -142,9 +142,9 @@ uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0,
 
 //TODO version naming
 
-//15 - додано щось
+//16 - докатка
 
-int version = 15;
+int version = 16;
 RoboArm arm(240.0, 124.0);
 
 //RoboArm arm(0, 124); - перша рука
@@ -277,6 +277,20 @@ int main(void) {
 		}
 
 		if (arm.State == arm.ArmStepWaitMOVE) {
+			int tempGripState = arm.GetGripperState();
+			//Зберігли попередній стан
+
+			if (tempGripState == 1 && un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
+				arm.State = arm.ArmGripPreMOVEStep;
+				arm.lastGripState = tempGripState; //записали поточне положеня
+				arm.SetGripper(0);
+			} else { //if (tempGripState == 0) { //якщо опущенний то можна далі рухатись
+				//+3
+				arm.State = arm.ArmGripPreENDMOVEStep;
+			}
+		}
+
+		if (arm.State == arm.ArmGripPreENDMOVEStep) {
 //			stepsSetFlagSent = true;
 			arm.State = arm.ArmSTAND;
 			un_send.params.lin = 0.0;
