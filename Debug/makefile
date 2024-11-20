@@ -78,8 +78,8 @@ all: main-build
 main-build: 2moto1enco_c6t6a.elf secondary-outputs
 
 # Tool invocations
-2moto1enco_c6t6a.elf 2moto1enco_c6t6a.map: $(OBJS) $(USER_OBJS) /home/anastasiia/Documents/AA/my/2moto1enco_c6t6-main/STM32F103C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "2moto1enco_c6t6a.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/anastasiia/Documents/AA/my/2moto1enco_c6t6-main/STM32F103C6TX_FLASH.ld" -Wl,-Map="2moto1enco_c6t6a.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+2moto1enco_c6t6a.elf 2moto1enco_c6t6a.map: $(OBJS) $(USER_OBJS) /home/anastasiia/Documents/AA/my/old\ folders\ for\ stm\ hand\ project/2moto1enco_c6t6-main\ (copy)/STM32F103C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "2moto1enco_c6t6a.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/anastasiia/Documents/AA/my/old folders for stm hand project/2moto1enco_c6t6-main (copy)/STM32F103C6TX_FLASH.ld" -Wl,-Map="2moto1enco_c6t6a.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

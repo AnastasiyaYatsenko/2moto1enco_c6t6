@@ -1,18 +1,18 @@
 /opt/st/stm32cubeide_1.13.2/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.11.3.rel1.linux64_1.1.1.202309131626/tools/arm-none-eabi/include/c++/11.3.1/bits/std_abs.h:75:3:constexpr float std::abs(float)	16	static
-../Core/Src/main.cpp:161:5:int main()	128	static
-../Core/Src/main.cpp:569:6:void SystemClock_Config()	72	static
-../Core/Src/main.cpp:611:13:void MX_SPI1_Init()	8	static
-../Core/Src/main.cpp:647:13:void MX_TIM1_Init()	80	static
-../Core/Src/main.cpp:710:13:void MX_TIM2_Init()	48	static
-../Core/Src/main.cpp:757:13:void MX_TIM3_Init()	48	static
-../Core/Src/main.cpp:804:13:void MX_USART1_UART_Init()	8	static
-../Core/Src/main.cpp:835:13:void MX_USART2_UART_Init()	8	static
-../Core/Src/main.cpp:866:13:void MX_GPIO_Init()	40	static
-../Core/Src/main.cpp:938:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	24	static
-../Core/Src/main.cpp:1009:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static
-../Core/Src/main.cpp:1046:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:1067:6:void debounce_check_pins_and_set_flag()	16	static
-../Core/Src/main.cpp:1149:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
-../Core/Src/main.cpp:1252:6:void Error_Handler()	16	static,ignoring_inline_asm
-../Core/Src/main.cpp:1267:1:void __static_initialization_and_destruction_0(int, int)	16	static
-../Core/Src/main.cpp:1267:1:cpp)	8	static
+../Core/Src/main.cpp:162:5:int main()	128	static
+../Core/Src/main.cpp:574:6:void SystemClock_Config()	72	static
+../Core/Src/main.cpp:616:13:void MX_SPI1_Init()	8	static
+../Core/Src/main.cpp:652:13:void MX_TIM1_Init()	80	static
+../Core/Src/main.cpp:715:13:void MX_TIM2_Init()	48	static
+../Core/Src/main.cpp:762:13:void MX_TIM3_Init()	48	static
+../Core/Src/main.cpp:809:13:void MX_USART1_UART_Init()	8	static
+../Core/Src/main.cpp:840:13:void MX_USART2_UART_Init()	8	static
+../Core/Src/main.cpp:871:13:void MX_GPIO_Init()	40	static
+../Core/Src/main.cpp:943:6:void HAL_UART_RxCpltCallback(UART_HandleTypeDef*)	24	static
+../Core/Src/main.cpp:1021:6:void HAL_GPIO_EXTI_Callback(uint16_t)	16	static
+../Core/Src/main.cpp:1058:6:void HAL_UART_ErrorCallback(UART_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:1079:6:void debounce_check_pins_and_set_flag()	16	static
+../Core/Src/main.cpp:1161:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+../Core/Src/main.cpp:1287:6:void Error_Handler()	16	static,ignoring_inline_asm
+../Core/Src/main.cpp:1302:1:void __static_initialization_and_destruction_0(int, int)	16	static
+../Core/Src/main.cpp:1302:1:cpp)	8	static

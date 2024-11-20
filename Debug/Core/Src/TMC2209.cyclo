@@ -8,11 +8,14 @@
 ../Core/Src/TMC2209.cpp:122:6:void TMC2209::setHoldCurrent(uint8_t)	1
 ../Core/Src/TMC2209.cpp:148:6:void TMC2209::enableInverseMotorDirection()	1
 ../Core/Src/TMC2209.cpp:153:6:void TMC2209::disableInverseMotorDirection()	1
+../Core/Src/TMC2209.cpp:233:6:void TMC2209::setStallGuardThreshold(uint8_t)	1
+../Core/Src/TMC2209.cpp:438:10:uint16_t TMC2209::getStallGuardResult()	1
 ../Core/Src/TMC2209.cpp:476:6:void TMC2209::initialize(long int, TMC2209::SerialAddress)	1
 ../Core/Src/TMC2209.cpp:562:6:void TMC2209::setOperationModeToSerial(TMC2209::SerialAddress)	1
 ../Core/Src/TMC2209.cpp:574:6:void TMC2209::setRegistersToDefaults()	1
 ../Core/Src/TMC2209.cpp:621:10:uint32_t TMC2209::reverseData(uint32_t)	2
 ../Core/Src/TMC2209.cpp:709:6:void TMC2209::write(uint8_t, uint32_t)	1
+../Core/Src/TMC2209.cpp:722:10:uint32_t TMC2209::read(uint8_t)	2
 ../Core/Src/TMC2209.cpp:746:9:uint8_t TMC2209::percentToCurrentSetting(uint8_t)	1
 ../Core/Src/TMC2209.cpp:759:9:uint8_t TMC2209::map(uint8_t, uint8_t, uint8_t, uint8_t, uint8_t)	1
 ../Core/Src/TMC2209.cpp:774:6:void TMC2209::writeStoredGlobalConfig()	1
@@ -20,3 +23,4 @@
 ../Core/Src/TMC2209.cpp:795:6:void TMC2209::writeStoredChopperConfig()	1
 ../Core/Src/TMC2209.cpp:634:9:uint8_t TMC2209::calculateCrc(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	4
 ../Core/Src/TMC2209.cpp:653:6:void TMC2209::sendDatagramUnidirectional(Datagram&, uint8_t) [with Datagram = TMC2209::WriteReadReplyDatagram]	1
+../Core/Src/TMC2209.cpp:634:9:uint8_t TMC2209::calculateCrc(Datagram&, uint8_t) [with Datagram = TMC2209::ReadRequestDatagram]	4

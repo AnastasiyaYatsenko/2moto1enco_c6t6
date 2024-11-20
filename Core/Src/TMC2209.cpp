@@ -230,9 +230,9 @@ void TMC2209::disableInverseMotorDirection() {
 //	write(ADDRESS_TPWMTHRS, duration_threshold);
 //}
 //
-//void TMC2209::setStallGuardThreshold(uint8_t stall_guard_threshold) {
-//	write(ADDRESS_SGTHRS, stall_guard_threshold);
-//}
+void TMC2209::setStallGuardThreshold(uint8_t stall_guard_threshold) {
+	write(ADDRESS_SGTHRS, stall_guard_threshold);
+}
 //
 //void TMC2209::enableCoolStep(uint8_t lower_threshold, uint8_t upper_threshold) {
 //	lower_threshold = constrain(lower_threshold, SEMIN_MIN, SEMIN_MAX);
@@ -435,9 +435,9 @@ void TMC2209::disableInverseMotorDirection() {
 //	return read(ADDRESS_TSTEP);
 //}
 //
-//uint16_t TMC2209::getStallGuardResult() {
-//	return read(ADDRESS_SG_RESULT);
-//}
+uint16_t TMC2209::getStallGuardResult() {
+	return read(ADDRESS_SG_RESULT);
+}
 //
 //uint8_t TMC2209::getPwmScaleSum() {
 //	PwmScale pwm_scale;
@@ -719,29 +719,29 @@ void TMC2209::write(uint8_t register_address, uint32_t data) {
 }
 //
 ///* CHANGED TO HAL */
-//uint32_t TMC2209::read(uint8_t register_address) {
-//	ReadRequestDatagram read_request_datagram;
-//	read_request_datagram.bytes = 0;
-//	read_request_datagram.sync = SYNC;
-//	read_request_datagram.serial_address = serial_address_;
-//	read_request_datagram.register_address = register_address;
-//	read_request_datagram.rw = RW_READ;
-//	read_request_datagram.crc = calculateCrc(read_request_datagram,	READ_REQUEST_DATAGRAM_SIZE);
-//
-//	HAL_HalfDuplex_EnableTransmitter(tmcuart);
-//	HAL_UART_Transmit(tmcuart, (uint8_t *)(&read_request_datagram.bytes), READ_REQUEST_DATAGRAM_SIZE, 12);
-//
-//	WriteReadReplyDatagram read_reply_datagram;
-//	read_reply_datagram.bytes = 0;
-//
-//	HAL_StatusTypeDef status3 = HAL_HalfDuplex_EnableReceiver(tmcuart);
-//	HAL_StatusTypeDef status = HAL_UART_Receive(tmcuart, (uint8_t *)(&read_reply_datagram.bytes), WRITE_READ_REPLY_DATAGRAM_SIZE, 12);
-//	if (status != HAL_OK){
-//		return 0;
-//	}
-//
-//	return reverseData(read_reply_datagram.data);
-//}
+uint32_t TMC2209::read(uint8_t register_address) {
+	ReadRequestDatagram read_request_datagram;
+	read_request_datagram.bytes = 0;
+	read_request_datagram.sync = SYNC;
+	read_request_datagram.serial_address = serial_address_;
+	read_request_datagram.register_address = register_address;
+	read_request_datagram.rw = RW_READ;
+	read_request_datagram.crc = calculateCrc(read_request_datagram,	READ_REQUEST_DATAGRAM_SIZE);
+
+	HAL_HalfDuplex_EnableTransmitter(tmcuart);
+	HAL_UART_Transmit(tmcuart, (uint8_t *)(&read_request_datagram.bytes), READ_REQUEST_DATAGRAM_SIZE, 12);
+
+	WriteReadReplyDatagram read_reply_datagram;
+	read_reply_datagram.bytes = 0;
+
+	HAL_StatusTypeDef status3 = HAL_HalfDuplex_EnableReceiver(tmcuart);
+	HAL_StatusTypeDef status = HAL_UART_Receive(tmcuart, (uint8_t *)(&read_reply_datagram.bytes), WRITE_READ_REPLY_DATAGRAM_SIZE, 12);
+	if (status != HAL_OK){
+		return 0;
+	}
+
+	return reverseData(read_reply_datagram.data);
+}
 //
 uint8_t TMC2209::percentToCurrentSetting(uint8_t percent) {
 	uint8_t constrained_percent = constrain(percent, PERCENT_MIN, PERCENT_MAX);

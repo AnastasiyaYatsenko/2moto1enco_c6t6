@@ -185,20 +185,20 @@ int RoboArm::Move2Motors(float angle, float distance) {
 		actualPosAngle = inverse_pos_ang;
 		if (lastPosAngle < angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_RESET);
-			tmcd_angle.enableInverseMotorDirection();
+			tmcd_angle.disableInverseMotorDirection();
 		} else {//if (lastPosAngle > angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_SET);
 
-			tmcd_angle.disableInverseMotorDirection();
+			tmcd_angle.enableInverseMotorDirection();
 		}
 	} else {
 		actualPosAngle = pos_ang;
 		if (lastPosAngle < angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_SET);
-			tmcd_angle.disableInverseMotorDirection();
+			tmcd_angle.enableInverseMotorDirection();
 		} else {//if (lastPosAngle > angle) {
 			//	HAL_GPIO_WritePin(Dir1_GPIO_Port_M1, Dir1_Pin_M1, GPIO_PIN_RESET);
-			tmcd_angle.enableInverseMotorDirection();
+			tmcd_angle.disableInverseMotorDirection();
 		}
 	}
 
@@ -297,10 +297,10 @@ int RoboArm::Set2StepMotors(float stepLinT, int periodLinT, float stepAngleT,
 
 	float tempAngDir = 0, tempLinDir = 0;
 	if (stepAngleT < 0) {
-		tmcd_angle.enableInverseMotorDirection();
+		tmcd_angle.disableInverseMotorDirection(); // TODO change on rpi?
 //		tempAngDir = -1;
 	} else {//if (stepAngleT > 0) {
-		tmcd_angle.disableInverseMotorDirection();
+		tmcd_angle.enableInverseMotorDirection();  // TODO
 //		tempAngDir = 1;
 	}
 
@@ -502,6 +502,8 @@ int RoboArm::GetGripperState() {
 		return 1;
 	} else if (pin_DOWN == GPIO_PIN_SET && pin_UP == GPIO_PIN_RESET) {
 		return 0;
+	} else if (isLoose == true) {
+		return 2;
 	} else {
 		return 3; //error
 	}
@@ -525,7 +527,7 @@ int RoboArm::SetSettGripper(GPIO_TypeDef *EndCap1_GPIO_PortT,
 	return 0;
 }
 
-int RoboArm::SetGripper(int opcl) {
+int RoboArm::SetGripper(int start_state, int opcl) {
 
 	//Встановити захват
 	//TODO додати перевірку чи точно зупинились мотори
@@ -542,10 +544,18 @@ int RoboArm::SetGripper(int opcl) {
 //	SetEnable(3, false);
 
 	//Зупинили все, 1 та 2й на утриманні
-	//Обираэмо напрям
-	if (opcl == 1) {
+	//Обираємо напрям
+	//TODO loose state
+	isLoose = false;
+	lastGripState = start_state;
+	if (opcl == 2) {
+		toLoose = true;
+	} else {
+		toLoose = false;
+	}
+	if ((opcl == 1) || (opcl == 2 && start_state == 0)) {
 		HAL_GPIO_WritePin(Dir3_GPIO_Port_M3, Dir3_Pin_M3, GPIO_PIN_SET);
-	} else if (opcl == 0) {
+	} else if ((opcl == 0) || (opcl == 2 && start_state == 1)) {
 		HAL_GPIO_WritePin(Dir3_GPIO_Port_M3, Dir3_Pin_M3, GPIO_PIN_RESET);
 	}
 
@@ -690,7 +700,7 @@ float RoboArm::GetAng() {
 //	}
 
 	float ang_actual = GetAngleEncoders(posnowT_1);
-	float ang = ang_actual + defaultAngle; //arm.ShiftZeroAng(ang_actual);
+	float ang = 360 - ang_actual + defaultAngle; //arm.ShiftZeroAng(ang_actual);
 	if (ang > 360.0)
 		ang -= 360.0;
 	return ang;

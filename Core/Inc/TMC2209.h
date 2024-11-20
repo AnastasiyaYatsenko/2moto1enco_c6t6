@@ -83,7 +83,7 @@ public:
 //
 //	void setStealthChopDurationThreshold(uint32_t duration_threshold);
 //
-//	void setStallGuardThreshold(uint8_t stall_guard_threshold);
+	void setStallGuardThreshold(uint8_t stall_guard_threshold);
 //
 //	// lower_threshold: min = 1, max = 15
 //	// upper_threshold: min = 0, max = 15, 0-2 recommended
@@ -185,7 +185,7 @@ public:
 //
 //	uint8_t getInterfaceTransmissionCounter();
 //	uint32_t getInterstepDuration();
-//	uint16_t getStallGuardResult();
+	uint16_t getStallGuardResult();
 //	uint8_t getPwmScaleSum();
 //	int16_t getPwmScaleAuto();
 //	uint8_t getPwmOffsetAuto();
@@ -501,7 +501,7 @@ private:
 //	void sendDatagramBidirectional(Datagram &datagram, uint8_t datagram_size);
 
 	void write(uint8_t register_address, uint32_t data);
-//	uint32_t read(uint8_t register_address);
+	uint32_t read(uint8_t register_address);
 
 	uint8_t percentToCurrentSetting(uint8_t percent);
 //	uint8_t currentSettingToPercent(uint8_t current_setting);

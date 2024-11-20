@@ -68,8 +68,13 @@ public:
 
 	uint32_t distPsteps = 0, anglePsteps = 0;
 	uint32_t gripperPsteps = 67000; // TODO
+	uint32_t gripperPstepsFull = 67000;
+	uint32_t gripperPstepsLoose_fromUnhold = 36500;
+	uint32_t gripperPstepsLoose_fromHold = 30500;
 //	uint32_t gripperPsteps = 523*drvMicroSteps;
 	uint8_t lastGripState = 0;
+	bool toLoose = false;
+	bool isLoose = false;
 
 	float distMax = 210.0;
 	float distMin = 48.0;
@@ -135,7 +140,7 @@ public:
 	RoboArm(float, float);
 	int OpenGripper();				   // Open Gripper
 	int CloseGripper();				   // Close Gripper
-	int SetGripper(int);			   // Set Gripper
+	int SetGripper(int, int);			   // Set Gripper
 	int SetSettGripper(GPIO_TypeDef *EndCap1_GPIO_PortT, uint16_t EndCap1_PinT,
 			GPIO_TypeDef *EndCap2_GPIO_PortT, uint16_t EndCap2_PinT,
 			GPIO_TypeDef *EndCap3_GPIO_PortT, uint16_t EndCap3_PinT,
@@ -201,6 +206,9 @@ private:
 	float lastPosAngle_Set = 0;
 
 	bool lastPosGripper = false;
+	int lastEndcap = 0;
+	int stepsFromLastEndcap = 0;
+
 
 	// zero position info
 	float ang_zero = 0;

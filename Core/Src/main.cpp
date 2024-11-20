@@ -142,9 +142,10 @@ uint32_t cntImpulse1 = 0, cntImpulse2 = 0, cntImpulse3 = 0, step1 = 0,
 
 //TODO version naming
 
-//16 - докатка
+//17 - зміна напрямку зросту кута - ПРОТИ годинникової стрілки
+//18 - new holders + small stuff
 
-int version = 16;
+int version = 18;
 RoboArm arm(240.0, 124.0);
 
 //RoboArm arm(0, 124); - перша рука
@@ -243,6 +244,7 @@ int main(void) {
 		}
 
 		//!!!!!!!!!ЯКЩО зараз йде рух зацепа то ми постійно в цій умові перевіряємо стан зацепа і виставляємо флаг
+
 		if (arm.State == arm.ArmGripPreMOVE || arm.State == arm.ArmGripMOVE || arm.State == arm.ArmGripMOVERetry) {
 
 			debounce_check_pins_and_set_flag();
@@ -257,11 +259,12 @@ int main(void) {
 			int tempGripState = arm.GetGripperState();
 			//Зберігли попередній стан
 
-			if (tempGripState == 1 && un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
+			// TODO here is the problem with 2 -> 0!!!
+			if ((tempGripState == 1 && un_to.params.hold == 0) || (tempGripState == 1 && un_to.params.hold == 2) || (tempGripState == 2 && un_to.params.hold == 0)) { //якщо піднятий +1.1 і треба опустити
 //			if (un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
 				arm.State = arm.ArmGripPreMOVE;
 				arm.lastGripState = tempGripState; //записали поточне положеня
-				arm.SetGripper(0);
+				arm.SetGripper(tempGripState, un_to.params.hold);
 			} else { //if (tempGripState == 0) { //якщо опущенний то можна далі рухатись
 				//+3
 				arm.State = arm.ArmGripPreENDMOVE;
@@ -280,10 +283,11 @@ int main(void) {
 			int tempGripState = arm.GetGripperState();
 			//Зберігли попередній стан
 
-			if (tempGripState == 1 && un_to.params.hold == 0) { //якщо піднятий +1.1 і треба опустити
+			// TODO loose state
+			if ((tempGripState == 1 && un_to.params.hold == 0) || (tempGripState == 1 && un_to.params.hold == 2) || (tempGripState == 2 && un_to.params.hold == 0)) { //якщо піднятий +1.1 і треба опустити
 				arm.State = arm.ArmGripPreMOVEStep;
 				arm.lastGripState = tempGripState; //записали поточне положеня
-				arm.SetGripper(0);
+				arm.SetGripper(tempGripState, un_to.params.hold);
 			} else { //if (tempGripState == 0) { //якщо опущенний то можна далі рухатись
 				//+3
 				arm.State = arm.ArmGripPreENDMOVEStep;
@@ -435,13 +439,14 @@ int main(void) {
 			//+6 Перевірка статуса зацепа чи він не посередині і встановлюємо потрібний опускаємо
 //			arm.SetBuserState(1);
 			int tempGripState = arm.GetGripperState();
-			if ((tempGripState == 1 || tempGripState == 0)
+			//TODO add loose state
+			if ((tempGripState == 1 || tempGripState == 0 || tempGripState == 2)
 					&& (tempGripState != un_to.params.hold)) {
 
 				arm.lastGripState = tempGripState; //записали поточне положеня
 
 				arm.State = arm.ArmGripMOVE;
-				arm.SetGripper(un_to.params.hold);
+				arm.SetGripper(tempGripState, un_to.params.hold);
 			} else if (tempGripState == un_to.params.hold) {
 				arm.State = arm.ArmGripENDMOVE;
 			} else if (tempGripState == 3) {
@@ -453,7 +458,7 @@ int main(void) {
 		if (arm.State == arm.ArmGripMOVEError) {
 			arm.State = arm.ArmGripMOVERetry;
 			//їдемо в протилежну сторону
-			arm.SetGripper(0); // TODO to last stable position
+			arm.SetGripper(1, 0); // TODO to last stable position
 
 //			if (arm.lastGripState == 1) {
 //				arm.SetGripper(1);
@@ -939,15 +944,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	//UNUSED(huart);
 	if (huart == &huart1) {
 		// копіюємо отримані дані у rx_buffer
+		HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
 		memcpy(un_get.bytes, rx_buffer, sizeof(rx_buffer));
 
 		switch (un_get.params.hold) {
 		case 0:
 		case 1:
+		case 2:
 			// 0 або 1 у un_get.params.hold = прийшли нові координати
 			//startFirstMove = true;
 
 			//статус початку руху  +1
+//			arm.SetBuserState(1);
+//			HAL_GPIO_TogglePin(Led1_GPIO_Port, Led1_Pin);
 			arm.State = arm.ArmSTART;
 
 			un_to.params.lin = un_get.params.lin;
@@ -982,6 +991,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 		case 31: //так робити погано але ладна)
 		case 30:
+		case 32:
+//			arm.SetBuserState(1);
+//			HAL_GPIO_TogglePin(Led1_GPIO_Port, Led1_Pin);
 			arm.State = arm.ArmStepSTART;
 			un_to.params.lin = un_get.params.lin; //це кроки 1
 			un_to.params.ang = un_get.params.ang; //це кроки 2
@@ -1001,7 +1013,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
 		}
 		memset(rx_buffer, 0, sizeof(rx_buffer));
-		HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
+//		HAL_GPIO_TogglePin(Led_GPIO_Port, Led_Pin);
 	}
 	HAL_UART_Receive_IT(&huart1, rx_buffer, sizeof(rx_buffer));
 }
@@ -1186,7 +1198,30 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
 		cntImpulse3++;
 
 		// якщо кроки закінчилися але кінцевік не спрацював, то зупиняємось.
-		if (cntImpulse3 >= arm.gripperPsteps && gripIntFlag == false) {
+		// TODO if we are going for a loose state, it's probably what we need
+		if ((arm.toLoose == true) && ((arm.lastGripState == 0 && cntImpulse3 >= arm.gripperPstepsLoose_fromUnhold) || (
+				arm.lastGripState == 1 && cntImpulse3 >= arm.gripperPstepsLoose_fromHold))) {
+			//TODO add check for additional counter
+
+			gripIntFlag = false;
+			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
+			HAL_TIM_Base_Stop_IT(&htim3);
+
+			if (arm.State == arm.ArmGripPreMOVE) {
+				arm.State = arm.ArmGripPreENDMOVE;
+			} else if (arm.State == arm.ArmGripPreMOVEStep) {
+				arm.State = arm.ArmGripPreENDMOVEStep;
+			} else if (arm.State == arm.ArmGripMOVE) {
+				arm.State = arm.ArmGripENDMOVE;
+			} else if (arm.State == arm.ArmGripMOVERetry) {
+				arm.State = arm.ArmGripPermit;
+			}
+
+			cntImpulse3 = 0;
+			timerFT3 = true;
+			arm.isLoose = true;
+		}
+		else if (cntImpulse3 >= arm.gripperPsteps && gripIntFlag == false) {
 			HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_2);
 			HAL_TIM_Base_Stop_IT(&htim3);
 			arm.State = arm.ArmGripMOVEError;
